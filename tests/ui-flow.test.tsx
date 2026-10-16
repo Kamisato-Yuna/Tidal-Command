@@ -3,6 +3,7 @@ import React from 'react';
 import { describe,it,expect,vi,afterEach } from 'vitest';
 import { render,screen,fireEvent,waitFor,cleanup } from '@testing-library/react';
 import { chooseEasy } from '../src/ai';
+import { createGame, applyShot, randomFleet, serializeGame } from '../src/core';
 import App from '../src/App';
 const SAVE='tidal-command:match:v1';
 vi.mock('../src/audio/sound',()=>({sound:{unlock:async()=>{},play:()=>{},configure:()=>{},setAmbient:()=>{}}}));
@@ -15,4 +16,18 @@ describe('complete React flows with isolated renderer and simulated public-obser
  it('starts with hidden enemy models, finishes17 hit shots, commits once, and exposes completed layouts',async()=>{setup();const original=save();expect(screen.getByTestId('scene').getAttribute('data-ships')).toBe('');const cells:number[]=original.fleets.ai.flatMap((s:any)=>s.cells);for(let i=0;i<cells.length;i++){fireEvent.click(screen.getByRole('button',{name:`scene ${cells[i]}`}));const fire=screen.getByRole('button',{name:/开火/});expect((fire as HTMLButtonElement).disabled).toBe(false);fireEvent.click(fire);fireEvent.click(fire);if(i<cells.length-1){await waitFor(()=>expect(save().events).toHaveLength((i+1)*2),{timeout:5000});await waitFor(()=>expect(screen.getByRole('heading',{name:'指挥官，选择你的目标。'})).toBeTruthy(),{timeout:5000});}}await waitFor(()=>expect(screen.getByRole('heading',{name:'这片海域，属于你。'})).toBeTruthy(),{timeout:5000});const done=save();expect(done.events).toHaveLength(33);expect(done.fleets).toEqual(original.fleets);expect(done.winner).toBe('player');expect(screen.getByTestId('scene').getAttribute('data-ships')!.split(',')).toHaveLength(5);fireEvent.click(screen.getByRole('button',{name:'查看完整攻击记录'}));expect(document.querySelectorAll('.modal .log-row')).toHaveLength(33);},25000);
  it('refresh restores pending AI turn without duplicate player damage',async()=>{setup();fireEvent.click(screen.getByRole('button',{name:'scene 44'}));fireEvent.click(screen.getByRole('button',{name:/开火/}));expect(save().events).toHaveLength(1);cleanup();render(<App/>);fireEvent.click(screen.getByRole('button',{name:/继续上次作战/}));await waitFor(()=>expect(save().events).toHaveLength(2),{timeout:5000});expect(save().shots.player).toEqual([44]);await waitFor(()=>expect(screen.getByRole('heading',{name:'指挥官，选择你的目标。'})).toBeTruthy());fireEvent.click(screen.getByRole('button',{name:'scene 44'}));expect((screen.getByRole('button',{name:/开火/}) as HTMLButtonElement).disabled).toBe(true);});
  it('handles corrupt saves and distinct placement instances',()=>{localStorage.setItem(SAVE,'{bad');render(<App/>);expect(screen.getByRole('status').textContent).toContain('无法读取存档');fireEvent.click(screen.getByRole('button',{name:'开始游戏'}));expect((screen.getByRole('button',{name:'开始战斗'}) as HTMLButtonElement).disabled).toBe(true);fireEvent.click(screen.getByRole('button',{name:'随机布阵'}));expect(screen.getByTestId('scene').getAttribute('data-ships')!.split(',')).toHaveLength(5);fireEvent.click(screen.getByRole('button',{name:'清空'}));expect(screen.getByTestId('scene').getAttribute('data-ships')).toBe('');});
+ it('replays a completed Normal save at Normal difficulty after refresh and menu changes',()=>{
+  let state=createGame(randomFleet(610), 'normal', {enemyFleet:randomFleet(611),aiRngState:123,matchId:'completed-normal'});
+  const targets=state.fleets.ai.flatMap(s=>s.cells), occupied=new Set(state.fleets.player.flatMap(s=>s.cells));
+  const misses=Array.from({length:100},(_,c)=>c).filter(c=>!occupied.has(c));
+  targets.forEach((target,i)=>{state=applyShot(state,'player',target).state;if(!state.winner)state=applyShot(state,'ai',misses[i]).state;});
+  localStorage.setItem(SAVE,serializeGame(state));render(<App/>);
+  fireEvent.click(screen.getByRole('button',{name:/简单.*从容/}));
+  fireEvent.click(screen.getByRole('button',{name:/查看上次战报/}));
+  fireEvent.click(screen.getByRole('button',{name:'再来一局'}));
+  fireEvent.click(screen.getByRole('button',{name:'随机布阵'}));
+  fireEvent.click(screen.getByRole('button',{name:'开始战斗'}));
+  expect(save().difficulty).toBe('normal');expect(save().matchId).not.toBe('completed-normal');
+ });
+
 });

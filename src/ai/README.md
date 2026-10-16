@@ -52,6 +52,21 @@ For parallel runs, use disjoint shards with `--raw-diagnostics=1`; use shard len
 
 This fresh run is a 64-seed smoke test, below the 1,000-seed acceptance requirement. It does not establish browser latency, target-hardware frame rates or human win rates.
 
+## Current full acceptance (2026-10-16)
+
+The fresh full acceptance run is `../../docs/ai-acceptance-reconstructed-1000.json`, with a short summary in `../../docs/ai-acceptance-current-results.txt`.
+
+- 1,000 fixed acceptance seeds, 300000–300999, at production budget; 2,000 swapped-first games per pairing
+- Two seeds (300000 and 300006) previously appeared only in a 20-sample merge-plumbing smoke; no strategy tuning followed. The other 998 seeds were previously unused.
+- Runtime and benchmark SHA-256 source hashes were checked unchanged and are embedded in the report
+- Same-target mean shots: Normal 45.821; HuntTarget 51.423; Easy 61.382; Random 95.373
+- Normal vs Easy: 83.50%, 95% paired-seed bootstrap interval 81.15–85.70%
+- Normal vs HuntTarget: 72.90%, interval 70.20–75.45%
+- 159,255 Normal decisions; zero degraded decisions and internal budget timeouts
+- Four-process cloud CLI latency: mean 5.54 ms; P90 12.17 ms; P99 18.01 ms; maximum 340.95 ms
+- The 65% HuntTarget goal is met; the 90% Easy goal remains unmet
+- Human playtests, browser latency and target-device FPS are separate and remain unestablished by this benchmark
+
 ## Historical result, original environment only
 
 The prior, now-lost implementation completed 1,000 held-out seeds (100000–100999), with 640 samples and four concurrent benchmark processes. The original raw per-seed report is no longer present. Retained aggregate results:

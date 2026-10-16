@@ -14,10 +14,15 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
           lfs: true
+      - name: Verify LFS checkout
+        run: |
+          git lfs ls-files
+          git lfs fsck
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -36,6 +41,17 @@ jobs:
         run: npm run test:e2e
         env:
           TEST_BASE_URL: http://127.0.0.1:4173/Tidal-Command/
+      - name: Upload browser QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-qa-evidence
+          path: |
+            screenshots
+            test-results
+            playwright-report
+          if-no-files-found: warn
+          retention-days: 14
       - uses: actions/upload-artifact@v4
         with:
           name: static-site

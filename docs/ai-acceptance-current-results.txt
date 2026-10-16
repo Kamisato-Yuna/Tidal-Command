@@ -1,0 +1,34 @@
+Tidal Command — current reconstructed-code AI acceptance
+Generated: 2026-10-16T14:07:25.578Z
+
+This is a fresh measurement of the reconstructed current code, not a reuse of the lost historical report. Runtime/benchmark SHA-256 hashes were checked unchanged during the run and are embedded in the JSON.
+
+Scope: 1,000 seeds, 300000–300999; production 640 samples / 48,000 nodes / 420 ms internal budget. Four concurrent CLI shards. Each strategy comparison swaps first player, yielding 2,000 games per pairing. All 1,000 seeds are retained.
+
+Seed provenance: Seeds 300000 and 300006 previously appeared only in a two-seed benchmark-merge plumbing smoke at 20 samples. No policy or parameter tuning followed. This full run uses the exact requested 300000–300999 range at 640 samples, including 998 previously unused seeds.
+
+Same-target shots to sink all ships (mean / median / P90):
+- Normal: 45.821 / 45 / 60
+- HuntTarget: 51.423 / 53 / 62
+- Easy: 61.382 / 60 / 81
+- Random: 95.373 / 97 / 100
+
+Whole-strategy paired races:
+- Normal vs Easy: 83.50% (95% paired-seed bootstrap CI 81.15%–85.70%; normal first 84.20%, normal second 82.80%)
+- Normal vs HuntTarget: 72.90% (95% paired-seed bootstrap CI 70.20%–75.45%; normal first 74.20%, normal second 71.60%)
+- 90% Easy goal: not met
+- 65% HuntTarget goal: met
+
+Defense measured separately (mean shots):
+- Under Normal attacker: random 45.062; selected mixed 45.335
+- Under HuntTarget: random 51.127; selected mixed 52.962
+
+Normal diagnostics: 159,255 decisions, 0 degraded (0.00%), 0 internal-budget timeouts (0.00%).
+CLI elapsed time per decision: mean 5.54 ms; median 4.23 ms; P90 12.17 ms; P99 18.01 ms; max 340.95 ms.
+Environment: v24.19.0, linux x64, AMD EPYC 9V74 80-Core Processor. Concurrent CPU benchmark timing is not browser Worker latency or target-machine FPS.
+
+Earlier verification on this same reconstructed source: 24/24 correctness tests and TypeScript passed; benchmark merge smoke passed. This acceptance run asserts no repeated/invalid shots and no game exceeding 100 attacks per side.
+
+Important limits: approximate biased constrained sampling, not exact Bayesian inference or optimal play. Procedural fleets are not uniformly sampled from all legal fleets. Human win rates and M4 Pro/iMac Pro/RTX 3080 performance remain unmeasured here. Browser 1-second worker protection is a separate mechanism, not a measured strict latency guarantee.
+
+Files: ai-acceptance-reconstructed-1000.json contains aggregate/per-style metrics and every seed record; ai-acceptance-source-manifest.json contains source hashes.
