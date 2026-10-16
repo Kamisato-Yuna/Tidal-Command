@@ -16,6 +16,14 @@ test('high-quality desktop scene screenshots',async({page})=>{
   await page.addInitScript(()=>localStorage.setItem('tidal-command:settings:v1',JSON.stringify({fast:true,muted:true,quality:'high',reducedMotion:true,ambient:false,guide:false})));
   await page.goto('./');
   await expect(page.getByRole('button',{name:'开始游戏',exact:true})).toBeVisible();
+  await expect(page.locator('canvas')).toBeVisible();
+  // Initial React visibility precedes WebGL initialization. Let the renderer settle
+  // before collecting visual evidence, including on software-rendered CI runners.
+  await page.evaluate(()=>new Promise<void>(resolve=>{
+    let frames=30;
+    const next=()=>{if(--frames===0)resolve();else requestAnimationFrame(next);};
+    requestAnimationFrame(next);
+  }));
   await page.screenshot({path:'screenshots/01-home-high.png',fullPage:true});
   await page.getByRole('button',{name:'开始游戏',exact:true}).click();
   await page.getByRole('button',{name:'随机布阵',exact:true}).click();
