@@ -1,0 +1,22 @@
+{
+  "capturedAt": "2026-10-16T14:03:35.008780+00:00",
+  "hashAlgorithm": "SHA-256",
+  "files": {
+    "scripts/benchmark-ai.ts": "c313b259b2a1da47d202065a15ab8595f5783513d3846ed32e863cb1f13e34c7",
+    "src/ai/baselines.ts": "4b2ce58ab749e74e3d708636cd3a13dc76fac14cbc57e5f3c0f65e3ff859cbb8",
+    "src/ai/easy.ts": "c6c11b90905fb02635a9d7edceceb14ab4e610825b8e625aaccde2b63a173539",
+    "src/ai/index.ts": "4912872236ef297e164086fcee0a6af24bf6c09ecbac4b587dc164f16264fe00",
+    "src/ai/normal.ts": "5b74e23c2bb1faf51fea6a1c76eb1af5ecffc16c699822d8241cfdaf882f25d3",
+    "src/ai/observation.ts": "e18d7e5ad54a24ae83e65d7f7671fe51bee090452d37d97483d6966ca1d5fc7b",
+    "src/ai/sampler.ts": "f72f94b84b9256282cfc7d59ab0f1f1b6c3b3b9b8b436820f07a27c0340e845d",
+    "src/core/game.ts": "636ddc707f439d368e9541c0f993ffd3db3d05646c7a13f7968343027d8e3c82",
+    "src/core/index.ts": "115397dff882a9e187fb349b9ce792ddf4849deccdfd478cf494d49530f191e4",
+    "src/core/placement.ts": "62824fd89e2f8ab3f76e42c16a99426e9ba8ed001a2c261f259292e48f4345ce",
+    "src/core/random.ts": "31a2402c55f8233c57b541760fa1e42898417e6c3981e46ef1a16cc9ca301e02",
+    "src/core/save.ts": "2917b22a324bd0543968b0d43e97c7465021c1aa02836baac52ff838876557d7",
+    "src/core/types.ts": "93d5d1fb1cda8525da5f4fae454720c86ca9eaaa9130f42657736e2c82918950",
+    "src/workers/ai.worker.ts": "bd5d7a864a1f114bc02b0349e9140213874a01a6f15a16f00517a12e48b15bf6",
+    "src/workers/client.ts": "535b34a0f271b086e9f348d2cce1656d4ceb5113dcc7f3ca7aa31d7db397811c",
+    "src/workers/protocol.ts": "28286956de726035809b3f7dab979866dd12a450459177118217d9ab394f5bef"
+  }
+}

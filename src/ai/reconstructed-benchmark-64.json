@@ -1,0 +1,1921 @@
+{
+  "benchmarkVersion": "tidal-ai-v1-reconstructed",
+  "createdAt": "2026-10-16T14:00:02.900Z",
+  "status": "current-source smoke benchmark, below 1000-seed acceptance target",
+  "environment": {
+    "node": "v24.19.0",
+    "platform": "linux",
+    "release": "6.18.44",
+    "arch": "x64",
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "logicalCpus": 9
+  },
+  "configuration": {
+    "seedCount": 64,
+    "seedStart": 200000,
+    "seedEnd": 200063,
+    "maxSamples": 640,
+    "maxNodes": 48000,
+    "maxMs": 420,
+    "productionSamplingBudget": true,
+    "placementGenerator": "procedural nonuniform; normal selects among 24 diverse candidates evaluated against 8 independent random/hunt/easy baseline runs",
+    "baselineVersion": "random-v1 / checkerboard-hunt-target-v1",
+    "hiddenInformation": "Evaluator exposes independent cloned public observations only."
+  },
+  "attackEfficiencySameTargets": {
+    "Random": {
+      "n": 64,
+      "mean": 94.921875,
+      "median": 97,
+      "p90": 100,
+      "p99": 100,
+      "min": 74,
+      "max": 100
+    },
+    "HuntTarget": {
+      "n": 64,
+      "mean": 49.890625,
+      "median": 52,
+      "p90": 61,
+      "p99": 64,
+      "min": 28,
+      "max": 64
+    },
+    "Easy": {
+      "n": 64,
+      "mean": 62.421875,
+      "median": 62,
+      "p90": 83,
+      "p99": 94,
+      "min": 34,
+      "max": 94
+    },
+    "Normal": {
+      "n": 64,
+      "mean": 44.484375,
+      "median": 43,
+      "p90": 58,
+      "p99": 70,
+      "min": 23,
+      "max": 70
+    }
+  },
+  "attackEfficiencyByStyle": {
+    "random": {
+      "Random": {
+        "n": 11,
+        "mean": 94.45454545454545,
+        "median": 95,
+        "p90": 100,
+        "p99": 100,
+        "min": 85,
+        "max": 100
+      },
+      "HuntTarget": {
+        "n": 11,
+        "mean": 50.36363636363637,
+        "median": 51,
+        "p90": 60,
+        "p99": 63,
+        "min": 32,
+        "max": 63
+      },
+      "Easy": {
+        "n": 11,
+        "mean": 61.18181818181818,
+        "median": 55,
+        "p90": 77,
+        "p99": 94,
+        "min": 41,
+        "max": 94
+      },
+      "Normal": {
+        "n": 11,
+        "mean": 41.18181818181818,
+        "median": 40,
+        "p90": 51,
+        "p99": 56,
+        "min": 30,
+        "max": 56
+      }
+    },
+    "edge": {
+      "Random": {
+        "n": 11,
+        "mean": 95.81818181818181,
+        "median": 97,
+        "p90": 99,
+        "p99": 100,
+        "min": 88,
+        "max": 100
+      },
+      "HuntTarget": {
+        "n": 11,
+        "mean": 46.90909090909091,
+        "median": 49,
+        "p90": 57,
+        "p99": 61,
+        "min": 28,
+        "max": 61
+      },
+      "Easy": {
+        "n": 11,
+        "mean": 54,
+        "median": 55,
+        "p90": 74,
+        "p99": 89,
+        "min": 34,
+        "max": 89
+      },
+      "Normal": {
+        "n": 11,
+        "mean": 43.81818181818182,
+        "median": 43,
+        "p90": 48,
+        "p99": 49,
+        "min": 40,
+        "max": 49
+      }
+    },
+    "adjacent": {
+      "Random": {
+        "n": 11,
+        "mean": 96.72727272727273,
+        "median": 98,
+        "p90": 100,
+        "p99": 100,
+        "min": 86,
+        "max": 100
+      },
+      "HuntTarget": {
+        "n": 11,
+        "mean": 52.63636363636363,
+        "median": 56,
+        "p90": 60,
+        "p99": 64,
+        "min": 29,
+        "max": 64
+      },
+      "Easy": {
+        "n": 11,
+        "mean": 63.81818181818182,
+        "median": 60,
+        "p90": 81,
+        "p99": 84,
+        "min": 41,
+        "max": 84
+      },
+      "Normal": {
+        "n": 11,
+        "mean": 45.54545454545455,
+        "median": 44,
+        "p90": 60,
+        "p99": 70,
+        "min": 23,
+        "max": 70
+      }
+    },
+    "dispersed": {
+      "Random": {
+        "n": 11,
+        "mean": 92.45454545454545,
+        "median": 95,
+        "p90": 100,
+        "p99": 100,
+        "min": 74,
+        "max": 100
+      },
+      "HuntTarget": {
+        "n": 11,
+        "mean": 51.81818181818182,
+        "median": 52,
+        "p90": 61,
+        "p99": 64,
+        "min": 36,
+        "max": 64
+      },
+      "Easy": {
+        "n": 11,
+        "mean": 59.54545454545455,
+        "median": 53,
+        "p90": 80,
+        "p99": 83,
+        "min": 44,
+        "max": 83
+      },
+      "Normal": {
+        "n": 11,
+        "mean": 40.09090909090909,
+        "median": 40,
+        "p90": 46,
+        "p99": 50,
+        "min": 27,
+        "max": 50
+      }
+    },
+    "easy": {
+      "Random": {
+        "n": 10,
+        "mean": 95.6,
+        "median": 96,
+        "p90": 100,
+        "p99": 100,
+        "min": 86,
+        "max": 100
+      },
+      "HuntTarget": {
+        "n": 10,
+        "mean": 46.7,
+        "median": 45,
+        "p90": 58,
+        "p99": 60,
+        "min": 36,
+        "max": 60
+      },
+      "Easy": {
+        "n": 10,
+        "mean": 72,
+        "median": 70,
+        "p90": 78,
+        "p99": 83,
+        "min": 62,
+        "max": 83
+      },
+      "Normal": {
+        "n": 10,
+        "mean": 46.7,
+        "median": 48,
+        "p90": 59,
+        "p99": 59,
+        "min": 32,
+        "max": 59
+      }
+    },
+    "normal": {
+      "Random": {
+        "n": 10,
+        "mean": 94.5,
+        "median": 97,
+        "p90": 99,
+        "p99": 100,
+        "min": 80,
+        "max": 100
+      },
+      "HuntTarget": {
+        "n": 10,
+        "mean": 50.7,
+        "median": 56,
+        "p90": 61,
+        "p99": 63,
+        "min": 28,
+        "max": 63
+      },
+      "Easy": {
+        "n": 10,
+        "mean": 65.1,
+        "median": 59,
+        "p90": 86,
+        "p99": 89,
+        "min": 38,
+        "max": 89
+      },
+      "Normal": {
+        "n": 10,
+        "mean": 50.3,
+        "median": 51,
+        "p90": 58,
+        "p99": 59,
+        "min": 41,
+        "max": 59
+      }
+    }
+  },
+  "defenseEfficiency": {
+    "randomUnderNormal": {
+      "n": 64,
+      "mean": 44.421875,
+      "median": 43,
+      "p90": 60,
+      "p99": 69,
+      "min": 25,
+      "max": 69
+    },
+    "mixedUnderNormal": {
+      "n": 64,
+      "mean": 48.234375,
+      "median": 47,
+      "p90": 60,
+      "p99": 69,
+      "min": 25,
+      "max": 69
+    },
+    "randomUnderHuntTarget": {
+      "n": 64,
+      "mean": 50.59375,
+      "median": 51,
+      "p90": 61,
+      "p99": 66,
+      "min": 31,
+      "max": 66
+    },
+    "mixedUnderHuntTarget": {
+      "n": 64,
+      "mean": 52.5625,
+      "median": 55,
+      "p90": 62,
+      "p99": 65,
+      "min": 28,
+      "max": 65
+    }
+  },
+  "fullStrategyPairedRaces": {
+    "explanation": "Attacks are independent of opponent attacks. Fixed fleets and alternating turns make outcomes exactly determined by shots-to-sink; first player wins equal-shot races. Every seed is evaluated in both first-player roles. Normal uses selected mixed layouts; Easy uses spaced layouts; HuntTarget uses random layouts.",
+    "normalVsEasy": {
+      "seedPairs": 64,
+      "games": 128,
+      "normalFirstWinRate": 0.796875,
+      "normalSecondWinRate": 0.796875,
+      "combinedWinRate": 0.796875,
+      "pairedSeedBootstrap95CI": [
+        0.6875,
+        0.890625
+      ]
+    },
+    "normalVsHuntTarget": {
+      "seedPairs": 64,
+      "games": 128,
+      "normalFirstWinRate": 0.765625,
+      "normalSecondWinRate": 0.734375,
+      "combinedWinRate": 0.75,
+      "pairedSeedBootstrap95CI": [
+        0.6484375,
+        0.8515625
+      ]
+    }
+  },
+  "normalDiagnostics": {
+    "decisions": 10293,
+    "elapsedMs": {
+      "n": 10293,
+      "mean": 4.748979967939429,
+      "median": 3.6220109999999295,
+      "p90": 10.841585000000123,
+      "p99": 14.530064000000493,
+      "min": 0.4165919999995822,
+      "max": 57.628701000001456
+    },
+    "degraded": 0,
+    "degradedRate": 0,
+    "timedOut": 0,
+    "timedOutRate": 0,
+    "meanCompleteSamples": 640,
+    "meanSearchNodes": 2467.8374623530553
+  },
+  "limitations": [
+    "Approximate biased constrained sampling, not exact posterior or optimal play.",
+    "Defensive strength requires the separate reported comparison; adjacency is not automatically stronger.",
+    "Wall-time protection can change decisions across devices; actual choices and diagnostics are saved in games.",
+    "CLI performance is not browser Worker latency or target-device FPS.",
+    "Human win rates and perceived fairness require playtests.",
+    "Source was reconstructed after environment replacement. Historical benchmark numbers are not validation of this source."
+  ],
+  "elapsedSeconds": 51.108978668000006,
+  "seedRecords": [
+    {
+      "seed": 200000,
+      "style": "random",
+      "commonTargetShots": {
+        "Random": 100,
+        "HuntTarget": 63,
+        "Easy": 52,
+        "Normal": 51
+      },
+      "normalVsEasyShots": [
+        60,
+        57
+      ],
+      "normalVsHuntTargetShots": [
+        51,
+        55
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 51,
+        "mixedUnderNormal": 49,
+        "randomUnderHuntTarget": 63,
+        "mixedUnderHuntTarget": 55
+      }
+    },
+    {
+      "seed": 200001,
+      "style": "edge",
+      "commonTargetShots": {
+        "Random": 99,
+        "HuntTarget": 57,
+        "Easy": 89,
+        "Normal": 48
+      },
+      "normalVsEasyShots": [
+        49,
+        55
+      ],
+      "normalVsHuntTargetShots": [
+        39,
+        59
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 39,
+        "mixedUnderNormal": 54,
+        "randomUnderHuntTarget": 63,
+        "mixedUnderHuntTarget": 59
+      }
+    },
+    {
+      "seed": 200002,
+      "style": "adjacent",
+      "commonTargetShots": {
+        "Random": 99,
+        "HuntTarget": 60,
+        "Easy": 71,
+        "Normal": 36
+      },
+      "normalVsEasyShots": [
+        33,
+        45
+      ],
+      "normalVsHuntTargetShots": [
+        61,
+        61
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 61,
+        "mixedUnderNormal": 41,
+        "randomUnderHuntTarget": 41,
+        "mixedUnderHuntTarget": 61
+      }
+    },
+    {
+      "seed": 200003,
+      "style": "dispersed",
+      "commonTargetShots": {
+        "Random": 100,
+        "HuntTarget": 50,
+        "Easy": 66,
+        "Normal": 27
+      },
+      "normalVsEasyShots": [
+        27,
+        57
+      ],
+      "normalVsHuntTargetShots": [
+        35,
+        32
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 35,
+        "mixedUnderNormal": 49,
+        "randomUnderHuntTarget": 46,
+        "mixedUnderHuntTarget": 32
+      }
+    },
+    {
+      "seed": 200004,
+      "style": "easy",
+      "commonTargetShots": {
+        "Random": 97,
+        "HuntTarget": 55,
+        "Easy": 83,
+        "Normal": 48
+      },
+      "normalVsEasyShots": [
+        48,
+        71
+      ],
+      "normalVsHuntTargetShots": [
+        44,
+        56
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 44,
+        "mixedUnderNormal": 60,
+        "randomUnderHuntTarget": 48,
+        "mixedUnderHuntTarget": 56
+      }
+    },
+    {
+      "seed": 200005,
+      "style": "normal",
+      "commonTargetShots": {
+        "Random": 97,
+        "HuntTarget": 56,
+        "Easy": 49,
+        "Normal": 43
+      },
+      "normalVsEasyShots": [
+        69,
+        49
+      ],
+      "normalVsHuntTargetShots": [
+        41,
+        56
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 41,
+        "mixedUnderNormal": 43,
+        "randomUnderHuntTarget": 31,
+        "mixedUnderHuntTarget": 56
+      }
+    },
+    {
+      "seed": 200006,
+      "style": "random",
+      "commonTargetShots": {
+        "Random": 95,
+        "HuntTarget": 44,
+        "Easy": 52,
+        "Normal": 47
+      },
+      "normalVsEasyShots": [
+        61,
+        67
+      ],
+      "normalVsHuntTargetShots": [
+        47,
+        62
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 47,
+        "mixedUnderNormal": 67,
+        "randomUnderHuntTarget": 44,
+        "mixedUnderHuntTarget": 62
+      }
+    },
+    {
+      "seed": 200007,
+      "style": "edge",
+      "commonTargetShots": {
+        "Random": 93,
+        "HuntTarget": 52,
+        "Easy": 41,
+        "Normal": 43
+      },
+      "normalVsEasyShots": [
+        55,
+        66
+      ],
+      "normalVsHuntTargetShots": [
+        40,
+        57
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 40,
+        "mixedUnderNormal": 49,
+        "randomUnderHuntTarget": 48,
+        "mixedUnderHuntTarget": 57
+      }
+    },
+    {
+      "seed": 200008,
+      "style": "adjacent",
+      "commonTargetShots": {
+        "Random": 99,
+        "HuntTarget": 56,
+        "Easy": 56,
+        "Normal": 57
+      },
+      "normalVsEasyShots": [
+        35,
+        51
+      ],
+      "normalVsHuntTargetShots": [
+        37,
+        47
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 37,
+        "mixedUnderNormal": 45,
+        "randomUnderHuntTarget": 51,
+        "mixedUnderHuntTarget": 47
+      }
+    },
+    {
+      "seed": 200009,
+      "style": "dispersed",
+      "commonTargetShots": {
+        "Random": 74,
+        "HuntTarget": 45,
+        "Easy": 68,
+        "Normal": 40
+      },
+      "normalVsEasyShots": [
+        40,
+        47
+      ],
+      "normalVsHuntTargetShots": [
+        39,
+        60
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 39,
+        "mixedUnderNormal": 63,
+        "randomUnderHuntTarget": 64,
+        "mixedUnderHuntTarget": 60
+      }
+    },
+    {
+      "seed": 200010,
+      "style": "easy",
+      "commonTargetShots": {
+        "Random": 98,
+        "HuntTarget": 58,
+        "Easy": 69,
+        "Normal": 43
+      },
+      "normalVsEasyShots": [
+        43,
+        83
+      ],
+      "normalVsHuntTargetShots": [
+        36,
+        48
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 36,
+        "mixedUnderNormal": 47,
+        "randomUnderHuntTarget": 61,
+        "mixedUnderHuntTarget": 48
+      }
+    },
+    {
+      "seed": 200011,
+      "style": "normal",
+      "commonTargetShots": {
+        "Random": 99,
+        "HuntTarget": 39,
+        "Easy": 86,
+        "Normal": 55
+      },
+      "normalVsEasyShots": [
+        33,
+        86
+      ],
+      "normalVsHuntTargetShots": [
+        30,
+        39
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 30,
+        "mixedUnderNormal": 55,
+        "randomUnderHuntTarget": 57,
+        "mixedUnderHuntTarget": 39
+      }
+    },
+    {
+      "seed": 200012,
+      "style": "random",
+      "commonTargetShots": {
+        "Random": 85,
+        "HuntTarget": 51,
+        "Easy": 43,
+        "Normal": 43
+      },
+      "normalVsEasyShots": [
+        45,
+        32
+      ],
+      "normalVsHuntTargetShots": [
+        43,
+        35
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 43,
+        "mixedUnderNormal": 53,
+        "randomUnderHuntTarget": 51,
+        "mixedUnderHuntTarget": 35
+      }
+    },
+    {
+      "seed": 200013,
+      "style": "edge",
+      "commonTargetShots": {
+        "Random": 97,
+        "HuntTarget": 41,
+        "Easy": 58,
+        "Normal": 43
+      },
+      "normalVsEasyShots": [
+        47,
+        56
+      ],
+      "normalVsHuntTargetShots": [
+        33,
+        44
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 33,
+        "mixedUnderNormal": 25,
+        "randomUnderHuntTarget": 56,
+        "mixedUnderHuntTarget": 44
+      }
+    },
+    {
+      "seed": 200014,
+      "style": "adjacent",
+      "commonTargetShots": {
+        "Random": 98,
+        "HuntTarget": 64,
+        "Easy": 52,
+        "Normal": 50
+      },
+      "normalVsEasyShots": [
+        32,
+        41
+      ],
+      "normalVsHuntTargetShots": [
+        59,
+        65
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 59,
+        "mixedUnderNormal": 54,
+        "randomUnderHuntTarget": 33,
+        "mixedUnderHuntTarget": 65
+      }
+    },
+    {
+      "seed": 200015,
+      "style": "dispersed",
+      "commonTargetShots": {
+        "Random": 100,
+        "HuntTarget": 40,
+        "Easy": 80,
+        "Normal": 39
+      },
+      "normalVsEasyShots": [
+        39,
+        64
+      ],
+      "normalVsHuntTargetShots": [
+        47,
+        48
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 47,
+        "mixedUnderNormal": 43,
+        "randomUnderHuntTarget": 51,
+        "mixedUnderHuntTarget": 48
+      }
+    },
+    {
+      "seed": 200016,
+      "style": "easy",
+      "commonTargetShots": {
+        "Random": 86,
+        "HuntTarget": 41,
+        "Easy": 75,
+        "Normal": 52
+      },
+      "normalVsEasyShots": [
+        52,
+        42
+      ],
+      "normalVsHuntTargetShots": [
+        61,
+        56
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 61,
+        "mixedUnderNormal": 35,
+        "randomUnderHuntTarget": 49,
+        "mixedUnderHuntTarget": 56
+      }
+    },
+    {
+      "seed": 200017,
+      "style": "normal",
+      "commonTargetShots": {
+        "Random": 98,
+        "HuntTarget": 63,
+        "Easy": 54,
+        "Normal": 41
+      },
+      "normalVsEasyShots": [
+        37,
+        54
+      ],
+      "normalVsHuntTargetShots": [
+        59,
+        63
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 59,
+        "mixedUnderNormal": 41,
+        "randomUnderHuntTarget": 43,
+        "mixedUnderHuntTarget": 63
+      }
+    },
+    {
+      "seed": 200018,
+      "style": "random",
+      "commonTargetShots": {
+        "Random": 100,
+        "HuntTarget": 46,
+        "Easy": 41,
+        "Normal": 45
+      },
+      "normalVsEasyShots": [
+        52,
+        66
+      ],
+      "normalVsHuntTargetShots": [
+        45,
+        60
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 45,
+        "mixedUnderNormal": 57,
+        "randomUnderHuntTarget": 46,
+        "mixedUnderHuntTarget": 60
+      }
+    },
+    {
+      "seed": 200019,
+      "style": "edge",
+      "commonTargetShots": {
+        "Random": 100,
+        "HuntTarget": 37,
+        "Easy": 55,
+        "Normal": 43
+      },
+      "normalVsEasyShots": [
+        58,
+        83
+      ],
+      "normalVsHuntTargetShots": [
+        39,
+        46
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 39,
+        "mixedUnderNormal": 56,
+        "randomUnderHuntTarget": 43,
+        "mixedUnderHuntTarget": 46
+      }
+    },
+    {
+      "seed": 200020,
+      "style": "adjacent",
+      "commonTargetShots": {
+        "Random": 95,
+        "HuntTarget": 29,
+        "Easy": 41,
+        "Normal": 70
+      },
+      "normalVsEasyShots": [
+        51,
+        77
+      ],
+      "normalVsHuntTargetShots": [
+        35,
+        33
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 35,
+        "mixedUnderNormal": 41,
+        "randomUnderHuntTarget": 53,
+        "mixedUnderHuntTarget": 33
+      }
+    },
+    {
+      "seed": 200021,
+      "style": "dispersed",
+      "commonTargetShots": {
+        "Random": 89,
+        "HuntTarget": 59,
+        "Easy": 52,
+        "Normal": 41
+      },
+      "normalVsEasyShots": [
+        41,
+        50
+      ],
+      "normalVsHuntTargetShots": [
+        57,
+        49
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 57,
+        "mixedUnderNormal": 53,
+        "randomUnderHuntTarget": 51,
+        "mixedUnderHuntTarget": 49
+      }
+    },
+    {
+      "seed": 200022,
+      "style": "easy",
+      "commonTargetShots": {
+        "Random": 94,
+        "HuntTarget": 45,
+        "Easy": 62,
+        "Normal": 59
+      },
+      "normalVsEasyShots": [
+        59,
+        78
+      ],
+      "normalVsHuntTargetShots": [
+        41,
+        53
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 41,
+        "mixedUnderNormal": 44,
+        "randomUnderHuntTarget": 65,
+        "mixedUnderHuntTarget": 53
+      }
+    },
+    {
+      "seed": 200023,
+      "style": "normal",
+      "commonTargetShots": {
+        "Random": 99,
+        "HuntTarget": 59,
+        "Easy": 59,
+        "Normal": 58
+      },
+      "normalVsEasyShots": [
+        40,
+        59
+      ],
+      "normalVsHuntTargetShots": [
+        60,
+        59
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 60,
+        "mixedUnderNormal": 58,
+        "randomUnderHuntTarget": 60,
+        "mixedUnderHuntTarget": 59
+      }
+    },
+    {
+      "seed": 200024,
+      "style": "random",
+      "commonTargetShots": {
+        "Random": 97,
+        "HuntTarget": 47,
+        "Easy": 94,
+        "Normal": 34
+      },
+      "normalVsEasyShots": [
+        54,
+        71
+      ],
+      "normalVsHuntTargetShots": [
+        34,
+        61
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 34,
+        "mixedUnderNormal": 48,
+        "randomUnderHuntTarget": 47,
+        "mixedUnderHuntTarget": 61
+      }
+    },
+    {
+      "seed": 200025,
+      "style": "edge",
+      "commonTargetShots": {
+        "Random": 95,
+        "HuntTarget": 28,
+        "Easy": 37,
+        "Normal": 42
+      },
+      "normalVsEasyShots": [
+        64,
+        47
+      ],
+      "normalVsHuntTargetShots": [
+        33,
+        50
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 33,
+        "mixedUnderNormal": 42,
+        "randomUnderHuntTarget": 45,
+        "mixedUnderHuntTarget": 50
+      }
+    },
+    {
+      "seed": 200026,
+      "style": "adjacent",
+      "commonTargetShots": {
+        "Random": 97,
+        "HuntTarget": 54,
+        "Easy": 52,
+        "Normal": 23
+      },
+      "normalVsEasyShots": [
+        41,
+        60
+      ],
+      "normalVsHuntTargetShots": [
+        39,
+        62
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 39,
+        "mixedUnderNormal": 39,
+        "randomUnderHuntTarget": 49,
+        "mixedUnderHuntTarget": 62
+      }
+    },
+    {
+      "seed": 200027,
+      "style": "dispersed",
+      "commonTargetShots": {
+        "Random": 97,
+        "HuntTarget": 36,
+        "Easy": 83,
+        "Normal": 42
+      },
+      "normalVsEasyShots": [
+        42,
+        59
+      ],
+      "normalVsHuntTargetShots": [
+        37,
+        60
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 37,
+        "mixedUnderNormal": 51,
+        "randomUnderHuntTarget": 48,
+        "mixedUnderHuntTarget": 60
+      }
+    },
+    {
+      "seed": 200028,
+      "style": "easy",
+      "commonTargetShots": {
+        "Random": 100,
+        "HuntTarget": 48,
+        "Easy": 70,
+        "Normal": 32
+      },
+      "normalVsEasyShots": [
+        32,
+        57
+      ],
+      "normalVsHuntTargetShots": [
+        31,
+        57
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 31,
+        "mixedUnderNormal": 55,
+        "randomUnderHuntTarget": 35,
+        "mixedUnderHuntTarget": 57
+      }
+    },
+    {
+      "seed": 200029,
+      "style": "normal",
+      "commonTargetShots": {
+        "Random": 89,
+        "HuntTarget": 61,
+        "Easy": 79,
+        "Normal": 59
+      },
+      "normalVsEasyShots": [
+        44,
+        79
+      ],
+      "normalVsHuntTargetShots": [
+        43,
+        61
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 43,
+        "mixedUnderNormal": 59,
+        "randomUnderHuntTarget": 37,
+        "mixedUnderHuntTarget": 61
+      }
+    },
+    {
+      "seed": 200030,
+      "style": "random",
+      "commonTargetShots": {
+        "Random": 97,
+        "HuntTarget": 60,
+        "Easy": 72,
+        "Normal": 32
+      },
+      "normalVsEasyShots": [
+        49,
+        78
+      ],
+      "normalVsHuntTargetShots": [
+        32,
+        61
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 32,
+        "mixedUnderNormal": 42,
+        "randomUnderHuntTarget": 60,
+        "mixedUnderHuntTarget": 61
+      }
+    },
+    {
+      "seed": 200031,
+      "style": "edge",
+      "commonTargetShots": {
+        "Random": 98,
+        "HuntTarget": 49,
+        "Easy": 74,
+        "Normal": 41
+      },
+      "normalVsEasyShots": [
+        42,
+        73
+      ],
+      "normalVsHuntTargetShots": [
+        48,
+        49
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 48,
+        "mixedUnderNormal": 35,
+        "randomUnderHuntTarget": 62,
+        "mixedUnderHuntTarget": 49
+      }
+    },
+    {
+      "seed": 200032,
+      "style": "adjacent",
+      "commonTargetShots": {
+        "Random": 86,
+        "HuntTarget": 36,
+        "Easy": 59,
+        "Normal": 35
+      },
+      "normalVsEasyShots": [
+        35,
+        45
+      ],
+      "normalVsHuntTargetShots": [
+        51,
+        62
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 51,
+        "mixedUnderNormal": 39,
+        "randomUnderHuntTarget": 51,
+        "mixedUnderHuntTarget": 62
+      }
+    },
+    {
+      "seed": 200033,
+      "style": "dispersed",
+      "commonTargetShots": {
+        "Random": 88,
+        "HuntTarget": 49,
+        "Easy": 44,
+        "Normal": 38
+      },
+      "normalVsEasyShots": [
+        38,
+        80
+      ],
+      "normalVsHuntTargetShots": [
+        55,
+        49
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 55,
+        "mixedUnderNormal": 54,
+        "randomUnderHuntTarget": 43,
+        "mixedUnderHuntTarget": 49
+      }
+    },
+    {
+      "seed": 200034,
+      "style": "easy",
+      "commonTargetShots": {
+        "Random": 98,
+        "HuntTarget": 40,
+        "Easy": 68,
+        "Normal": 50
+      },
+      "normalVsEasyShots": [
+        50,
+        48
+      ],
+      "normalVsHuntTargetShots": [
+        36,
+        48
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 36,
+        "mixedUnderNormal": 38,
+        "randomUnderHuntTarget": 47,
+        "mixedUnderHuntTarget": 48
+      }
+    },
+    {
+      "seed": 200035,
+      "style": "normal",
+      "commonTargetShots": {
+        "Random": 80,
+        "HuntTarget": 58,
+        "Easy": 89,
+        "Normal": 51
+      },
+      "normalVsEasyShots": [
+        38,
+        89
+      ],
+      "normalVsHuntTargetShots": [
+        33,
+        58
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 33,
+        "mixedUnderNormal": 51,
+        "randomUnderHuntTarget": 44,
+        "mixedUnderHuntTarget": 58
+      }
+    },
+    {
+      "seed": 200036,
+      "style": "random",
+      "commonTargetShots": {
+        "Random": 95,
+        "HuntTarget": 55,
+        "Easy": 77,
+        "Normal": 39
+      },
+      "normalVsEasyShots": [
+        50,
+        75
+      ],
+      "normalVsHuntTargetShots": [
+        39,
+        49
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 39,
+        "mixedUnderNormal": 42,
+        "randomUnderHuntTarget": 55,
+        "mixedUnderHuntTarget": 49
+      }
+    },
+    {
+      "seed": 200037,
+      "style": "edge",
+      "commonTargetShots": {
+        "Random": 99,
+        "HuntTarget": 55,
+        "Easy": 60,
+        "Normal": 41
+      },
+      "normalVsEasyShots": [
+        52,
+        46
+      ],
+      "normalVsHuntTargetShots": [
+        31,
+        55
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 31,
+        "mixedUnderNormal": 55,
+        "randomUnderHuntTarget": 54,
+        "mixedUnderHuntTarget": 55
+      }
+    },
+    {
+      "seed": 200038,
+      "style": "adjacent",
+      "commonTargetShots": {
+        "Random": 93,
+        "HuntTarget": 57,
+        "Easy": 71,
+        "Normal": 31
+      },
+      "normalVsEasyShots": [
+        46,
+        93
+      ],
+      "normalVsHuntTargetShots": [
+        53,
+        62
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 53,
+        "mixedUnderNormal": 35,
+        "randomUnderHuntTarget": 55,
+        "mixedUnderHuntTarget": 62
+      }
+    },
+    {
+      "seed": 200039,
+      "style": "dispersed",
+      "commonTargetShots": {
+        "Random": 95,
+        "HuntTarget": 61,
+        "Easy": 51,
+        "Normal": 40
+      },
+      "normalVsEasyShots": [
+        40,
+        46
+      ],
+      "normalVsHuntTargetShots": [
+        44,
+        55
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 44,
+        "mixedUnderNormal": 47,
+        "randomUnderHuntTarget": 48,
+        "mixedUnderHuntTarget": 55
+      }
+    },
+    {
+      "seed": 200040,
+      "style": "easy",
+      "commonTargetShots": {
+        "Random": 96,
+        "HuntTarget": 36,
+        "Easy": 78,
+        "Normal": 59
+      },
+      "normalVsEasyShots": [
+        59,
+        46
+      ],
+      "normalVsHuntTargetShots": [
+        33,
+        61
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 33,
+        "mixedUnderNormal": 43,
+        "randomUnderHuntTarget": 51,
+        "mixedUnderHuntTarget": 61
+      }
+    },
+    {
+      "seed": 200041,
+      "style": "normal",
+      "commonTargetShots": {
+        "Random": 91,
+        "HuntTarget": 28,
+        "Easy": 78,
+        "Normal": 52
+      },
+      "normalVsEasyShots": [
+        35,
+        78
+      ],
+      "normalVsHuntTargetShots": [
+        48,
+        28
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 48,
+        "mixedUnderNormal": 52,
+        "randomUnderHuntTarget": 36,
+        "mixedUnderHuntTarget": 28
+      }
+    },
+    {
+      "seed": 200042,
+      "style": "random",
+      "commonTargetShots": {
+        "Random": 90,
+        "HuntTarget": 51,
+        "Easy": 66,
+        "Normal": 36
+      },
+      "normalVsEasyShots": [
+        59,
+        61
+      ],
+      "normalVsHuntTargetShots": [
+        36,
+        45
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 36,
+        "mixedUnderNormal": 55,
+        "randomUnderHuntTarget": 51,
+        "mixedUnderHuntTarget": 45
+      }
+    },
+    {
+      "seed": 200043,
+      "style": "edge",
+      "commonTargetShots": {
+        "Random": 98,
+        "HuntTarget": 42,
+        "Easy": 35,
+        "Normal": 46
+      },
+      "normalVsEasyShots": [
+        48,
+        47
+      ],
+      "normalVsHuntTargetShots": [
+        45,
+        34
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 45,
+        "mixedUnderNormal": 51,
+        "randomUnderHuntTarget": 56,
+        "mixedUnderHuntTarget": 34
+      }
+    },
+    {
+      "seed": 200044,
+      "style": "adjacent",
+      "commonTargetShots": {
+        "Random": 100,
+        "HuntTarget": 60,
+        "Easy": 81,
+        "Normal": 60
+      },
+      "normalVsEasyShots": [
+        62,
+        30
+      ],
+      "normalVsHuntTargetShots": [
+        63,
+        60
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 63,
+        "mixedUnderNormal": 41,
+        "randomUnderHuntTarget": 54,
+        "mixedUnderHuntTarget": 60
+      }
+    },
+    {
+      "seed": 200045,
+      "style": "dispersed",
+      "commonTargetShots": {
+        "Random": 88,
+        "HuntTarget": 52,
+        "Easy": 48,
+        "Normal": 35
+      },
+      "normalVsEasyShots": [
+        35,
+        62
+      ],
+      "normalVsHuntTargetShots": [
+        47,
+        61
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 47,
+        "mixedUnderNormal": 66,
+        "randomUnderHuntTarget": 51,
+        "mixedUnderHuntTarget": 61
+      }
+    },
+    {
+      "seed": 200046,
+      "style": "easy",
+      "commonTargetShots": {
+        "Random": 95,
+        "HuntTarget": 60,
+        "Easy": 66,
+        "Normal": 42
+      },
+      "normalVsEasyShots": [
+        42,
+        66
+      ],
+      "normalVsHuntTargetShots": [
+        38,
+        44
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 38,
+        "mixedUnderNormal": 64,
+        "randomUnderHuntTarget": 54,
+        "mixedUnderHuntTarget": 44
+      }
+    },
+    {
+      "seed": 200047,
+      "style": "normal",
+      "commonTargetShots": {
+        "Random": 98,
+        "HuntTarget": 49,
+        "Easy": 62,
+        "Normal": 44
+      },
+      "normalVsEasyShots": [
+        49,
+        62
+      ],
+      "normalVsHuntTargetShots": [
+        65,
+        49
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 65,
+        "mixedUnderNormal": 44,
+        "randomUnderHuntTarget": 54,
+        "mixedUnderHuntTarget": 49
+      }
+    },
+    {
+      "seed": 200048,
+      "style": "random",
+      "commonTargetShots": {
+        "Random": 89,
+        "HuntTarget": 48,
+        "Easy": 74,
+        "Normal": 56
+      },
+      "normalVsEasyShots": [
+        46,
+        45
+      ],
+      "normalVsHuntTargetShots": [
+        56,
+        64
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 56,
+        "mixedUnderNormal": 58,
+        "randomUnderHuntTarget": 48,
+        "mixedUnderHuntTarget": 64
+      }
+    },
+    {
+      "seed": 200049,
+      "style": "edge",
+      "commonTargetShots": {
+        "Random": 94,
+        "HuntTarget": 53,
+        "Easy": 62,
+        "Normal": 49
+      },
+      "normalVsEasyShots": [
+        47,
+        77
+      ],
+      "normalVsHuntTargetShots": [
+        50,
+        62
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 50,
+        "mixedUnderNormal": 44,
+        "randomUnderHuntTarget": 46,
+        "mixedUnderHuntTarget": 62
+      }
+    },
+    {
+      "seed": 200050,
+      "style": "adjacent",
+      "commonTargetShots": {
+        "Random": 99,
+        "HuntTarget": 57,
+        "Easy": 75,
+        "Normal": 44
+      },
+      "normalVsEasyShots": [
+        42,
+        69
+      ],
+      "normalVsHuntTargetShots": [
+        42,
+        56
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 42,
+        "mixedUnderNormal": 41,
+        "randomUnderHuntTarget": 49,
+        "mixedUnderHuntTarget": 56
+      }
+    },
+    {
+      "seed": 200051,
+      "style": "dispersed",
+      "commonTargetShots": {
+        "Random": 100,
+        "HuntTarget": 60,
+        "Easy": 53,
+        "Normal": 46
+      },
+      "normalVsEasyShots": [
+        46,
+        80
+      ],
+      "normalVsHuntTargetShots": [
+        69,
+        57
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 69,
+        "mixedUnderNormal": 42,
+        "randomUnderHuntTarget": 66,
+        "mixedUnderHuntTarget": 57
+      }
+    },
+    {
+      "seed": 200052,
+      "style": "easy",
+      "commonTargetShots": {
+        "Random": 100,
+        "HuntTarget": 37,
+        "Easy": 73,
+        "Normal": 32
+      },
+      "normalVsEasyShots": [
+        32,
+        69
+      ],
+      "normalVsHuntTargetShots": [
+        52,
+        52
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 52,
+        "mixedUnderNormal": 69,
+        "randomUnderHuntTarget": 56,
+        "mixedUnderHuntTarget": 52
+      }
+    },
+    {
+      "seed": 200053,
+      "style": "normal",
+      "commonTargetShots": {
+        "Random": 100,
+        "HuntTarget": 36,
+        "Easy": 38,
+        "Normal": 42
+      },
+      "normalVsEasyShots": [
+        67,
+        38
+      ],
+      "normalVsHuntTargetShots": [
+        51,
+        36
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 51,
+        "mixedUnderNormal": 42,
+        "randomUnderHuntTarget": 54,
+        "mixedUnderHuntTarget": 36
+      }
+    },
+    {
+      "seed": 200054,
+      "style": "random",
+      "commonTargetShots": {
+        "Random": 96,
+        "HuntTarget": 32,
+        "Easy": 47,
+        "Normal": 30
+      },
+      "normalVsEasyShots": [
+        37,
+        59
+      ],
+      "normalVsHuntTargetShots": [
+        30,
+        44
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 30,
+        "mixedUnderNormal": 37,
+        "randomUnderHuntTarget": 32,
+        "mixedUnderHuntTarget": 44
+      }
+    },
+    {
+      "seed": 200055,
+      "style": "edge",
+      "commonTargetShots": {
+        "Random": 88,
+        "HuntTarget": 41,
+        "Easy": 49,
+        "Normal": 46
+      },
+      "normalVsEasyShots": [
+        37,
+        79
+      ],
+      "normalVsHuntTargetShots": [
+        34,
+        57
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 34,
+        "mixedUnderNormal": 44,
+        "randomUnderHuntTarget": 52,
+        "mixedUnderHuntTarget": 57
+      }
+    },
+    {
+      "seed": 200056,
+      "style": "adjacent",
+      "commonTargetShots": {
+        "Random": 100,
+        "HuntTarget": 52,
+        "Easy": 60,
+        "Normal": 54
+      },
+      "normalVsEasyShots": [
+        42,
+        60
+      ],
+      "normalVsHuntTargetShots": [
+        51,
+        44
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 51,
+        "mixedUnderNormal": 40,
+        "randomUnderHuntTarget": 59,
+        "mixedUnderHuntTarget": 44
+      }
+    },
+    {
+      "seed": 200057,
+      "style": "dispersed",
+      "commonTargetShots": {
+        "Random": 91,
+        "HuntTarget": 54,
+        "Easy": 46,
+        "Normal": 43
+      },
+      "normalVsEasyShots": [
+        43,
+        71
+      ],
+      "normalVsHuntTargetShots": [
+        62,
+        64
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 62,
+        "mixedUnderNormal": 38,
+        "randomUnderHuntTarget": 59,
+        "mixedUnderHuntTarget": 64
+      }
+    },
+    {
+      "seed": 200058,
+      "style": "easy",
+      "commonTargetShots": {
+        "Random": 92,
+        "HuntTarget": 47,
+        "Easy": 76,
+        "Normal": 50
+      },
+      "normalVsEasyShots": [
+        50,
+        78
+      ],
+      "normalVsHuntTargetShots": [
+        52,
+        35
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 52,
+        "mixedUnderNormal": 69,
+        "randomUnderHuntTarget": 42,
+        "mixedUnderHuntTarget": 35
+      }
+    },
+    {
+      "seed": 200059,
+      "style": "normal",
+      "commonTargetShots": {
+        "Random": 94,
+        "HuntTarget": 58,
+        "Easy": 57,
+        "Normal": 58
+      },
+      "normalVsEasyShots": [
+        55,
+        57
+      ],
+      "normalVsHuntTargetShots": [
+        47,
+        58
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 47,
+        "mixedUnderNormal": 58,
+        "randomUnderHuntTarget": 58,
+        "mixedUnderHuntTarget": 58
+      }
+    },
+    {
+      "seed": 200060,
+      "style": "random",
+      "commonTargetShots": {
+        "Random": 95,
+        "HuntTarget": 57,
+        "Easy": 55,
+        "Normal": 40
+      },
+      "normalVsEasyShots": [
+        41,
+        91
+      ],
+      "normalVsHuntTargetShots": [
+        40,
+        54
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 40,
+        "mixedUnderNormal": 41,
+        "randomUnderHuntTarget": 57,
+        "mixedUnderHuntTarget": 54
+      }
+    },
+    {
+      "seed": 200061,
+      "style": "edge",
+      "commonTargetShots": {
+        "Random": 93,
+        "HuntTarget": 61,
+        "Easy": 34,
+        "Normal": 40
+      },
+      "normalVsEasyShots": [
+        39,
+        89
+      ],
+      "normalVsHuntTargetShots": [
+        49,
+        60
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 49,
+        "mixedUnderNormal": 39,
+        "randomUnderHuntTarget": 60,
+        "mixedUnderHuntTarget": 60
+      }
+    },
+    {
+      "seed": 200062,
+      "style": "adjacent",
+      "commonTargetShots": {
+        "Random": 98,
+        "HuntTarget": 54,
+        "Easy": 84,
+        "Normal": 41
+      },
+      "normalVsEasyShots": [
+        53,
+        65
+      ],
+      "normalVsHuntTargetShots": [
+        25,
+        45
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 25,
+        "mixedUnderNormal": 53,
+        "randomUnderHuntTarget": 45,
+        "mixedUnderHuntTarget": 45
+      }
+    },
+    {
+      "seed": 200063,
+      "style": "dispersed",
+      "commonTargetShots": {
+        "Random": 95,
+        "HuntTarget": 64,
+        "Easy": 64,
+        "Normal": 50
+      },
+      "normalVsEasyShots": [
+        50,
+        35
+      ],
+      "normalVsHuntTargetShots": [
+        40,
+        52
+      ],
+      "defenseShots": {
+        "randomUnderNormal": 40,
+        "mixedUnderNormal": 42,
+        "randomUnderHuntTarget": 50,
+        "mixedUnderHuntTarget": 52
+      }
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+name: Verify and optionally deploy Pages
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      deploy_pages:
+        description: Deploy to GitHub Pages (Sites remains available independently)
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Serve production at project subpath
+        run: |
+          mkdir -p .preview/Tidal-Command
+          cp -R dist/. .preview/Tidal-Command/
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory .preview &
+      - name: Test full game and refresh at project path
+        run: npm run test:e2e
+        env:
+          TEST_BASE_URL: http://127.0.0.1:4173/Tidal-Command/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: static-site
+          path: dist
+      - if: github.event_name == 'workflow_dispatch' && inputs.deploy_pages
+        uses: actions/configure-pages@v5
+      - if: github.event_name == 'workflow_dispatch' && inputs.deploy_pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+  deploy:
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy_pages
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
