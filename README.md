@@ -49,6 +49,15 @@ npm run benchmark -- --seeds=1000 --seed-start=300000 --out=docs/ai-acceptance-r
 
 Playwright使用已安装Chromium；如果系统没有浏览器，先 `npx playwright install chromium`。可用 `CHROMIUM_PATH=/path/to/chromium` 指定，或用 `TEST_BASE_URL=https://host/Tidal-Command/ npm run test:e2e` 检查已部署项目。CI在生产子路径运行完整对局及续局测试。
 
+## 当前验证结果
+
+- 33项规则、AI公平性、存档、React流程与演出时序测试通过；真实Chromium生产子路径E2E通过。
+- 独立WebGL界面完成135次双方行动的完整对局，手动部署、刷新续局、移动布局、战报与重开均检查。
+- 新1,000种子验收：普通对简单83.50%，对HuntTarget72.90%。65% HuntTarget目标达到，90%简单目标尚未达到；不承诺对人类固定胜率。
+- 生产站点检查了普通Worker与刷新续局。目标GPU和真人试玩仍待实测；云软件渲染结果不代表真实机器性能。
+
+完整环境、截图覆盖、未完成项及原始报告链接见[验证记录](docs/VERIFICATION.md)。
+
 ## Git LFS
 
 `.gitattributes` 将大型二进制源素材配置为LFS（模型、纹理、音频等）。当前素材全部程序化，因此实际LFS对象为零；规则已配置，不把未发生的对象上传描述为已验证。

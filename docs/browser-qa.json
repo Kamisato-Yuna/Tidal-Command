@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-16",
+  "environment": {
+    "browser": "Chromium Headless Shell 140.0.7339.186",
+    "renderer": "SwiftShader software WebGL2",
+    "viewport": [
+      1440,
+      900
+    ],
+    "playthrough_quality": "low",
+    "playthrough_fast": true
+  },
+  "ui_only_match": {
+    "difficulty": "easy",
+    "winner": "player",
+    "player_shots": 68,
+    "ai_shots": 67,
+    "player_hits": 17,
+    "event_count": 135,
+    "page_errors": [],
+    "hidden_fleet_or_saved_state_used": false,
+    "input": "Normal visible controls, arrow target selection, fire/Enter, visible public log feedback"
+  },
+  "coverage": [
+    "Manual placement",
+    "R-key and button rotation",
+    "Reposition existing ship",
+    "Reject overlap",
+    "Clear fleet",
+    "Random complete fleet",
+    "Two-step fire",
+    "Double Enter does not duplicate attack",
+    "Refresh and continue after 8 player shots preserves visible events",
+    "Settings fast/mute persist",
+    "Full result and own/enemy layout tabs",
+    "135-entry full attack log",
+    "Replay begins empty deployment with battle disabled"
+  ],
+  "responsive": [
+    {
+      "viewport": [
+        1280,
+        720
+      ],
+      "fire_box": [
+        1012.046875,
+        650,
+        190,
+        46
+      ]
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "fire_box": [
+        249.40625,
+        780,
+        112,
+        43
+      ],
+      "horizontal_overflow": false
+    }
+  ],
+  "software_frame_sample": {
+    "viewport": [
+      1440,
+      900
+    ],
+    "quality": "medium",
+    "duration_ms": 3003,
+    "frames": 85,
+    "mean_interval_ms": 35.32823529411655,
+    "p95_interval_ms": 50,
+    "caveat": "Cloud software-renderer sample, not a target-hardware frame rate guarantee"
+  },
+  "production": {
+    "url": "https://tidal-command.sappycorgi5.chatgpt.site",
+    "smoke": "Normal difficulty, random deployment, F5 fire, AI F6 response, reload/continue preserves exactly two events",
+    "rendering": "Cloud browser reports WebGL2 unavailable; production 3D rendering was not verified in that browser"
+  },
+  "sites_source_commit": "252c73ec844f04cbbd57f31bcdcc14c06d2f68a0"
+}
