@@ -5,11 +5,12 @@
 ## 当前重建版本
 
 - npm run typecheck / npm run build：重新执行通过。
-- 28/28测试重新执行通过（24项核心与4项React界面集成），覆盖完整单局、恢复待执行AI回合、损坏存档，以及刷新后重开普通战报仍保持普通难度。
+- 33/33测试重新执行通过（24项核心、4项React界面集成与5项演出时序测试），覆盖完整单局、恢复待执行AI回合、损坏存档，以及刷新后重开普通战报仍保持普通难度。
 - 新64种子正式预算冒烟结果见 src/ai/reconstructed-benchmark-64.json：Normal44.48平均攻击，HuntTarget49.89，Easy62.42；Normal对Easy79.69%，对HuntTarget75.00%；10,293次决策无降级/超时。
 - 新1,000种子正式验收完成，原始记录见 [ai-acceptance-reconstructed-1000.json](ai-acceptance-reconstructed-1000.json)，汇总见 [ai-acceptance-current-results.txt](ai-acceptance-current-results.txt)。种子300000–300999，交换先手每组2,000局；其中2种子曾用于合并管线冒烟，未随后调参，998种子此前未用。
 - 当前Normal对Easy胜率83.50%（95%区间81.15–85.70），对HuntTarget72.90%（70.20–75.45）；平均攻击45.821/51.423/61.382/95.373（Normal/HuntTarget/Easy/Random）。159,255次Normal决策无降级或内部超时，CLI P90 12.17ms，最大340.95ms。达到65% HuntTarget目标，尚未达到90% Easy目标。
 - GitHub Actions首次生产子路径验证通过：[运行38913014529](https://github.com/Kamisato-Yuna/Tidal-Command/actions/runs/38913014529)。包含类型、核心/React测试、构建及4项真实Chromium E2E（完整胜局、普通Worker与续局、窄屏开火、设置）。该运行对应第一次同步版本；随后修复的普通战报重开难度由新增回归测试覆盖，后续CI复验。
+- 修复快速演出220ms短于原弹道270ms导致水花尚未出现的问题：快速弹道70ms、减少动态效果为立即落点，并测试每种设置下落点之后至少保留100ms结果反馈。
 
 ## 历史结果（不是重建版本验收）
 
