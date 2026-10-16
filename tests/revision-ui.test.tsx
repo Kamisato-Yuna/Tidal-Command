@@ -3,12 +3,19 @@
 import React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import type { Ship } from '../src/core';
+import { applyVolley, createGame, randomFleet, serializeGame, type Ship } from '../src/core';
 import App from '../src/App';
 import { FleetRoster } from '../src/ui/FleetRoster';
 
 type SceneHarnessProps = {
   ships: readonly Ship[];
+  tentativeShip?: (Ship & { placement?: { row: number; col: number; orientation: 'horizontal' | 'vertical' } }) | null;
+  tentativeValid?: boolean;
+  latestVolleyCells?: readonly number[];
+  onBoardBlur?: () => void;
+  onShipMoveStart?: (id: string) => void;
+  onShipMove?: (id: string, origin: { row: number; col: number }) => void;
+  onShipMoveEnd?: () => void;
   selectedShipId?: string;
   draggingShipId?: string | null;
   onCellClick?: (cell: number) => void;
@@ -22,9 +29,11 @@ vi.mock('../src/workers/client', () => ({ requestAI: () => () => {} }));
 vi.mock('../src/scene/SeaBoard', () => ({
   SeaBoard: (props: SceneHarnessProps) => {
     scene.props = props;
-    return <div data-testid="revision-scene" data-selected-ship={props.selectedShipId}>
+    return <div data-testid="revision-scene" data-deployment-interaction data-selected-ship={props.selectedShipId}>
       {Array.from({ length: 100 }, (_, cell) => <button key={cell} aria-label={`测试海格 ${cell}`} onClick={() => props.onCellClick?.(cell)} />)}
-      {props.onRotateShip && <button aria-label="旋转已选舰船" onClick={props.onRotateShip} />}
+      {props.onRotateShip && props.tentativeShip && <button aria-label="旋转已选舰船" onClick={props.onRotateShip} />}
+      {props.onShipMove && props.tentativeShip && <button aria-label="移动已选舰船" />}
+      {props.onBoardBlur && <button aria-label="测试海域背景" onClick={props.onBoardBlur} />}
     </div>;
   },
 }));
@@ -34,37 +43,31 @@ function setupDeployment() {
   fireEvent.click(screen.getByRole('button', { name: '开始游戏' }));
 }
 const clickCell = (cell: number) => fireEvent.click(screen.getByRole('button', { name: `测试海格 ${cell}` }));
-const cellsOf = (id: string) => scene.props!.ships.find(ship => ship.id === id)?.cells;
-const fleetSnapshot = () => JSON.stringify(scene.props!.ships);
+const visibleFleet = () => [...scene.props!.ships, ...(scene.props!.tentativeShip ? [scene.props!.tentativeShip] : [])];
+const cellsOf = (id: string) => visibleFleet().find(ship => ship.id === id)?.cells;
+const fleetSnapshot = () => JSON.stringify(visibleFleet().map(({ id, cells }) => ({ id, cells })).sort((a, b) => a.id.localeCompare(b.id)));
+const blurBoard = () => fireEvent.click(screen.getByRole('button', { name: '测试海域背景' }));
 const choose = (name: string) => fireEvent.click(screen.getByRole('button', { name: new RegExp(name) }));
 
-describe('revised deployment controls with a mocked scene boundary', () => {
-  it('keeps a placed ship selected, rotates on board and by R, then moves it from an empty cell', () => {
-    setupDeployment();
-    clickCell(11);
+describe('tentative deployment controls with a mocked scene boundary', () => {
+  it('places, rotates, selects by ship body and commits a valid click move', () => {
+    setupDeployment(); clickCell(11);
     expect(cellsOf('carrier')).toEqual([11, 12, 13, 14, 15]);
     expect(scene.props!.selectedShipId).toBe('carrier');
     fireEvent.click(screen.getByRole('button', { name: '旋转已选舰船' }));
     expect(cellsOf('carrier')).toEqual([11, 21, 31, 41, 51]);
-    fireEvent.keyDown(window, { key: 'r' });
-    expect(cellsOf('carrier')).toEqual([11, 12, 13, 14, 15]);
-    clickCell(31);
+    fireEvent.keyDown(window, { key: 'r' }); clickCell(31);
     expect(cellsOf('carrier')).toEqual([31, 32, 33, 34, 35]);
-    expect(scene.props!.ships).toHaveLength(1);
-    const before = fleetSnapshot();
-    clickCell(34);
+    const before = fleetSnapshot(); clickCell(34);
     expect(fleetSnapshot()).toBe(before);
-    expect(scene.props!.selectedShipId).toBe('carrier');
+    blurBoard();
+    expect(scene.props!.tentativeShip).toBe(null);
+    expect(cellsOf('carrier')).toEqual([31, 32, 33, 34, 35]);
   });
 
-  it('selects an occupied ship without relocating either ship or propagating the placement action', () => {
-    setupDeployment();
-    clickCell(11);
-    choose('战列舰');
-    clickCell(71);
-    expect(scene.props!.selectedShipId).toBe('battleship');
-    const before = fleetSnapshot();
-    clickCell(13);
+  it('switches occupied ships without moving them or keeping the previous draft', () => {
+    setupDeployment(); clickCell(11); choose('战列舰'); clickCell(71);
+    const before = fleetSnapshot(); clickCell(13);
     expect(scene.props!.selectedShipId).toBe('carrier');
     expect(fleetSnapshot()).toBe(before);
     clickCell(74);
@@ -72,96 +75,131 @@ describe('revised deployment controls with a mocked scene boundary', () => {
     expect(fleetSnapshot()).toBe(before);
   });
 
-  it('preserves the committed fleet and orientation after an out-of-bounds rotation or move', () => {
-    setupDeployment();
-    clickCell(61);
-    const before = fleetSnapshot();
+  it('keeps an out-of-bounds rotated model tentative until Escape restores the committed fleet', () => {
+    setupDeployment(); clickCell(61);
     fireEvent.click(screen.getByRole('button', { name: '旋转已选舰船' }));
-    expect(fleetSnapshot()).toBe(before);
-    expect(screen.getByRole('status').textContent).toContain('棋盘内');
-    clickCell(99);
-    expect(fleetSnapshot()).toBe(before);
-    clickCell(41);
-    expect(cellsOf('carrier')).toEqual([41, 42, 43, 44, 45]);
+    expect(scene.props!.tentativeValid).toBe(false);
+    expect(scene.props!.tentativeShip?.placement).toEqual({ row: 6, col: 1, orientation: 'vertical' });
+    expect(scene.props!.selectedShipId).toBe('carrier');
+    expect(screen.getByRole('status').textContent).toContain('红色舰船暂留');
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(scene.props!.tentativeShip).toBe(null);
+    expect(cellsOf('carrier')).toEqual([61, 62, 63, 64, 65]);
   });
 
-  it('preserves both placements when rotating or moving would overlap another ship', () => {
-    setupDeployment();
-    clickCell(11);
-    choose('战列舰');
-    clickCell(51);
-    clickCell(11);
-    const before = fleetSnapshot();
+  it('corrects an invalid draft with an empty-grid click instead of blurring it', () => {
+    setupDeployment(); clickCell(61);
+    fireEvent.keyDown(window, { key: 'r' });
+    expect(scene.props!.tentativeValid).toBe(false);
+    clickCell(14);
+    expect(scene.props!.tentativeValid).toBe(true);
+    expect(cellsOf('carrier')).toEqual([14, 24, 34, 44, 54]);
+    expect(scene.props!.selectedShipId).toBe('carrier');
+    blurBoard();
+    expect(cellsOf('carrier')).toEqual([14, 24, 34, 44, 54]);
+  });
+
+  it('restores an invalid existing ship when selecting another ship', () => {
+    setupDeployment(); clickCell(11); choose('战列舰'); clickCell(51); clickCell(11);
     fireEvent.keyDown(window, { key: 'R' });
-    expect(fleetSnapshot()).toBe(before);
-    expect(screen.getByRole('status').textContent).toContain('间隔一格');
+    expect(scene.props!.tentativeValid).toBe(false);
+    expect(screen.getByRole('status').textContent).toContain('对角线');
     choose('战列舰');
-    clickCell(33);
-    clickCell(11);
-    const movedOther = fleetSnapshot();
-    clickCell(31);
-    expect(fleetSnapshot()).toBe(movedOther);
-    expect(screen.getByRole('status').textContent).toContain('原舰位已保留');
+    expect(cellsOf('carrier')).toEqual([11, 12, 13, 14, 15]);
+    expect(scene.props!.selectedShipId).toBe('battleship');
+    expect(scene.props!.tentativeValid).toBe(true);
   });
 
-  it('exports the drag identity and commits valid drop callbacks once while rejecting invalid drops', () => {
+  it('removes a never-committed invalid ship on explicit finish, background click or focus blur', () => {
+    setupDeployment(); clickCell(0);
+    expect(scene.props!.tentativeValid).toBe(false);
+    expect(scene.props!.tentativeShip?.id).toBe('carrier');
+    expect(scene.props!.ships).toHaveLength(0);
+    fireEvent.click(screen.getByRole('button', { name: /结束舰船编辑/ }));
+    expect(visibleFleet()).toHaveLength(0);
+    choose('航空母舰'); clickCell(0); blurBoard();
+    expect(visibleFleet()).toHaveLength(0);
+    choose('航空母舰'); clickCell(0); fireEvent.focusIn(document.body);
+    expect(visibleFleet()).toHaveLength(0);
+  });
+
+  it('preserves the draft for interactive board focus but restores it on a real outside pointerdown', () => {
+    setupDeployment(); clickCell(11); clickCell(0);
+    fireEvent.pointerDown(screen.getByTestId('revision-scene'));
+    fireEvent.focusIn(screen.getByTestId('revision-scene'));
+    expect(scene.props!.tentativeValid).toBe(false);
+    fireEvent.pointerDown(document.body);
+    expect(scene.props!.tentativeShip).toBe(null);
+    expect(cellsOf('carrier')).toEqual([11, 12, 13, 14, 15]);
+  });
+
+  it('exports native fleet drag identity and keeps invalid drops tentative until blur', () => {
     setupDeployment();
     const transfer = { setData: vi.fn(), effectAllowed: '' };
     const carrier = screen.getByRole('button', { name: /航空母舰/ });
-    expect(carrier.getAttribute('draggable')).toBe('true');
     fireEvent.dragStart(carrier, { dataTransfer: transfer });
     expect(transfer.setData).toHaveBeenCalledWith('application/x-tidal-ship', 'carrier');
-    expect(transfer.effectAllowed).toBe('move');
     expect(scene.props!.draggingShipId).toBe('carrier');
     act(() => scene.props!.onShipDrop?.('carrier', 11));
     expect(cellsOf('carrier')).toEqual([11, 12, 13, 14, 15]);
-    expect(scene.props!.ships).toHaveLength(1);
     expect(scene.props!.draggingShipId).toBe(null);
-    const before = fleetSnapshot();
     act(() => scene.props!.onShipDrop?.('carrier', 99));
-    expect(fleetSnapshot()).toBe(before);
-    fireEvent.dragStart(carrier, { dataTransfer: transfer });
+    expect(scene.props!.tentativeValid).toBe(false);
     fireEvent.dragEnd(carrier);
+    expect(scene.props!.tentativeValid).toBe(false);
+    blurBoard();
+    expect(cellsOf('carrier')).toEqual([11, 12, 13, 14, 15]);
+  });
+
+  it('routes handle drag synchronously and retains an invalid release until blur', () => {
+    setupDeployment(); clickCell(11);
+    act(() => { scene.props!.onShipMoveStart?.('carrier'); scene.props!.onShipMove?.('carrier', { row: 3, col: 1 }); scene.props!.onShipMoveEnd?.(); });
+    expect(cellsOf('carrier')).toEqual([31, 32, 33, 34, 35]);
     expect(scene.props!.draggingShipId).toBe(null);
-    expect(fleetSnapshot()).toBe(before);
+    act(() => { scene.props!.onShipMoveStart?.('carrier'); scene.props!.onShipMove?.('carrier', { row: 8, col: 9 }); scene.props!.onShipMoveEnd?.(); });
+    expect(scene.props!.tentativeValid).toBe(false);
+    expect(scene.props!.tentativeShip?.placement).toEqual({ row: 8, col: 9, orientation: 'horizontal' });
+    blurBoard();
+    expect(cellsOf('carrier')).toEqual([31, 32, 33, 34, 35]);
   });
 
-  it('reports strict boundary and diagonal violations without committing rejected placements', () => {
+  it('blocks launch and save of an invalid draft even when five valid ships were committed', () => {
     setupDeployment();
-    clickCell(0);
-    expect(scene.props!.ships).toHaveLength(0);
-    expect(screen.getByRole('status').textContent).toContain('边界');
-    clickCell(11);
-    choose('战列舰');
-    clickCell(26);
-    expect(scene.props!.ships).toHaveLength(1);
-    expect(screen.getByRole('status').textContent).toContain('对角线');
-    expect(screen.getByRole('status').textContent).toContain('原舰位已保留');
-  });
-
-  it('allows one perpendicular boundary edge but rejects an along-edge rotation', () => {
-    setupDeployment();
-    fireEvent.keyDown(window, { key: 'r' });
-    clickCell(1);
-    expect(cellsOf('carrier')).toEqual([1, 11, 21, 31, 41]);
-    const before = fleetSnapshot();
-    fireEvent.click(screen.getByRole('button', { name: '旋转已选舰船' }));
-    expect(fleetSnapshot()).toBe(before);
-    expect(screen.getByRole('status').textContent).toContain('边界');
-    clickCell(9);
-    expect(fleetSnapshot()).toBe(before);
-    expect(screen.getByRole('status').textContent).toContain('边界');
-  });
-
-  it('clears selected placements and randomizes to exactly five distinct ships', () => {
-    setupDeployment();
-    clickCell(11);
-    fireEvent.click(screen.getByRole('button', { name: '清空' }));
-    expect(scene.props!.ships).toHaveLength(0);
-    expect((screen.getByRole('button', { name: '开始战斗' }) as HTMLButtonElement).disabled).toBe(true);
     fireEvent.click(screen.getByRole('button', { name: '随机布阵' }));
+    const committed = scene.props!.ships.map(ship => ({ ...ship, cells: [...ship.cells] }));
+    choose('航空母舰');
+    act(() => scene.props!.onShipMove?.('carrier', { row: 11, col: 11 }));
+    const start = screen.getByRole('button', { name: '开始战斗' }) as HTMLButtonElement;
+    expect(start.disabled).toBe(true);
+    fireEvent.pointerDown(start); fireEvent.click(start);
+    expect(scene.props!.tentativeValid).toBe(false);
+    expect(localStorage.getItem('tidal-command:match:v1')).toBe(null);
+    blurBoard();
+    expect(start.disabled).toBe(false);
+    fireEvent.click(start);
+    const saved = JSON.parse(localStorage.getItem('tidal-command:match:v1')!);
+    expect(saved.fleets.player).toEqual(committed);
+  });
+
+  it('keeps one perpendicular boundary contact valid and an along-edge rotation red until deselect', () => {
+    setupDeployment(); fireEvent.keyDown(window, { key: 'r' }); clickCell(1);
+    expect(cellsOf('carrier')).toEqual([1, 11, 21, 31, 41]);
+    fireEvent.click(screen.getByRole('button', { name: '旋转已选舰船' }));
+    expect(scene.props!.tentativeValid).toBe(false);
+    expect(screen.getByRole('status').textContent).toContain('边界');
+    blurBoard();
+    expect(cellsOf('carrier')).toEqual([1, 11, 21, 31, 41]);
+  });
+
+  it('clear and random replace invalid drafts with clean legal setup state', () => {
+    setupDeployment(); clickCell(0);
+    fireEvent.click(screen.getByRole('button', { name: '清空' }));
+    expect(visibleFleet()).toHaveLength(0);
+    expect(scene.props!.tentativeShip).toBe(null);
+    clickCell(0);
+    fireEvent.click(screen.getByRole('button', { name: '随机布阵' }));
+    expect(scene.props!.tentativeShip).toBe(null);
     expect(scene.props!.ships).toHaveLength(5);
-    expect(new Set(scene.props!.ships.map(ship => ship.id)).size).toBe(5);
     expect(new Set(scene.props!.ships.flatMap(ship => ship.cells)).size).toBe(17);
   });
 });
@@ -303,5 +341,37 @@ describe('explicit single-shot and atomic salvo App controls', () => {
     fireEvent.keyDown(window, { key: 'Enter' });
     expect(savedGame().shots.player).toEqual([45, 55]);
     expect(savedGame().volleys).toHaveLength(1);
+  });
+});
+
+describe('public previous-round markers in both fleet views', () => {
+  function roundSave(includeNextPlayer = false) {
+    let game = createGame(randomFleet(31), 'easy', { enemyFleet: randomFleet(32), shellsPerTurn: 3, matchId: 'markers-ui' });
+    game = applyVolley(game, 'player', [0, 2, 4]).state;
+    game = applyVolley(game, 'ai', [90, 92, 94]).state;
+    if (includeNextPlayer) game = applyVolley(game, 'player', [1, 3, 5]).state;
+    localStorage.setItem('tidal-command:match:v1', serializeGame(game));
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: /继续上次作战/ }));
+    return game;
+  }
+  it('passes separate full-salvo markers to enemy, own and miniature boards after reload', () => {
+    roundSave();
+    expect(scene.props!.latestVolleyCells).toEqual([0, 2, 4]);
+    expect(scene.props!.ships).toHaveLength(0);
+    expect(document.querySelectorAll('.tactical-cell.recent-shot')).toHaveLength(3);
+    expect(screen.getByText(/方框标记第 1 回合炮击/)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: '我方海域' }));
+    expect(scene.props!.latestVolleyCells).toEqual([90, 92, 94]);
+    expect(scene.props!.ships).toHaveLength(5);
+    fireEvent.click(screen.getByRole('button', { name: /敌方海域/ }));
+    expect(scene.props!.latestVolleyCells).toEqual([0, 2, 4]);
+  });
+  it('retains the completed round while an AI response to the next player salvo is pending', () => {
+    roundSave(true);
+    expect(scene.props!.latestVolleyCells).toEqual([0, 2, 4]);
+    expect(scene.props!.latestVolleyCells).not.toEqual([1, 3, 5]);
+    fireEvent.click(screen.getByRole('button', { name: '我方海域' }));
+    expect(scene.props!.latestVolleyCells).toEqual([90, 92, 94]);
   });
 });

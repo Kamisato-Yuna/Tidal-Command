@@ -1,0 +1,91 @@
+{
+  "revision": 3,
+  "status": "production-preview-passed-awaiting-deployment-smoke",
+  "runtimeAsset": "index-BiToMrE4.js",
+  "environment": {
+    "browser": "Chromium Headless Shell 140.0.7339.186",
+    "renderer": "ANGLE SwiftShader software",
+    "viewports": [
+      "1440x900",
+      "390x844",
+      "1280x720"
+    ]
+  },
+  "unit": {
+    "ownedPure": 15,
+    "ownedComponent": 22,
+    "aggregateBuilderReported": 118,
+    "aggregatePassed": 118,
+    "filesPassed": 11,
+    "typecheck": "passed",
+    "build": "passed"
+  },
+  "browser": {
+    "productionPreview": true,
+    "passed": 13,
+    "failed": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "durationMs": 118052.684,
+    "startTime": "2026-10-16T16:39:15.976Z",
+    "reportJson": "test-results/e2e-results.json",
+    "reportHtml": "playwright-report/index.html",
+    "coverage": [
+      "Real native fleet drag and pointer-captured move handle",
+      "Icon-only move/rotate controls; no redundant sidebar rotation button",
+      "Valid committed moves and tentative red invalid moves/rotations",
+      "Existing invalid draft restores last valid placement on blur; new invalid draft disappears",
+      "Click raised hull reactivates or switches active ship without moving previous ship",
+      "Invalid draft cannot launch or overwrite saved match",
+      "Rapid sidebar choice, place, move, rotate and hull selection",
+      "Stale-ID overlay interception fixed and unchanged fast regression passed; same-ID projection synchronization unit-tested",
+      "Unrestricted multi-quadrant orbit; return-to-start drag cannot move or instant-fire",
+      "1/3/5-shell previous completed-round markers for both fleets, updates and reload",
+      "Single confirmation toggle and opt-in instant fire",
+      "Normal AI atomic 3-shell plan and refresh continuation",
+      "Hidden enemy placement not shown before sinking; public-only roster",
+      "Deterministic 17-hit full-match result and full event log",
+      "Settings, keyboard navigation, corrupt-save handling and mobile controls"
+    ],
+    "resolvedIssue": {
+      "description": "Old separate-Canvas Html control intercepted immediate next ship click",
+      "unchangedRegressionPass": true
+    }
+  },
+  "manual": {
+    "oppositeQuadrantPicking": "A3 readout matches visible labels without camera reset",
+    "mobile": "390x844 no horizontal overflow; active icon controls visible 36x36"
+  },
+  "screenshots": [
+    "screenshots/r3-03-final-active-icons.png",
+    "screenshots/r3-04-mobile-controls.png",
+    "screenshots/r3-e2e-red-offboard-hull.png",
+    "screenshots/r3-e2e-orbit-1.png",
+    "screenshots/r3-e2e-orbit-2.png",
+    "screenshots/r3-e2e-orbit-3.png",
+    "screenshots/r3-06-opposite-pick-A3.png",
+    "screenshots/r3-e2e-round-enemy.png",
+    "screenshots/r3-e2e-round-own.png"
+  ],
+  "limitations": [
+    "Deployment smoke pending publication",
+    "SwiftShader cloud rendering does not establish target-GPU performance",
+    "Full-match baseline uses saved enemy positions for deterministic mechanics coverage"
+  ],
+  "runtimeSha256": "81957681f685646a1512d8908a66196dfcbb0e8351ec124aaf7ee9efaa5642aa",
+  "softwareFrameSample": {
+    "browser": "140.0.7339.186",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "quality": "medium",
+    "durationMs": 4016.5480000000007,
+    "frames": 111,
+    "meanMs": 36.18511711711712,
+    "p95Ms": 50.100000000000364,
+    "fps": 27.635671228129226,
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+  }
+}

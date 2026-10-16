@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { PerspectiveCamera, Vector3 } from 'three';
+import { DEFAULT_CAMERA_POSITION } from '../../src/scene/boardInteraction';
 const saveKey = 'tidal-command:match:v1';
 const read = (page: Page) => page.evaluate(k => JSON.parse(localStorage.getItem(k)!), saveKey);
 async function boot(page: Page, shells = 1, normal = false) {
@@ -16,7 +17,7 @@ async function boot(page: Page, shells = 1, normal = false) {
 async function point(page: Page, cell: number) {
   const box = (await page.locator('canvas').boundingBox())!;
   const camera = new PerspectiveCamera(39, box.width / box.height, .1, 100);
-  camera.position.set(10, 13, 14); camera.lookAt(0, 0, 0); camera.updateMatrixWorld();
+  camera.position.set(...DEFAULT_CAMERA_POSITION); camera.lookAt(0, 0, 0); camera.updateMatrixWorld();
   const v = new Vector3(cell % 10 - 4.5, .025, Math.floor(cell / 10) - 4.5).project(camera);
   return { x: box.x + (v.x + 1) * box.width / 2, y: box.y + (1 - v.y) * box.height / 2 };
 }
@@ -42,13 +43,13 @@ test('real pointer drag, placed-ship selection, board rotation, classic rejectio
   await page.mouse.move(to.x, to.y, { steps: 15 }); await page.mouse.move(to.x + 1, to.y + 1); await page.mouse.up();
   await expect(page.locator('.fleet-panel .panel-title')).toContainText('1 / 5');
   await page.getByRole('button', { name: '旋转已选舰船', exact: true }).click(); await page.waitForTimeout(150);
-  await expect(page.getByRole('status')).toContainText('舰船已旋转');
+  await expect(page.getByRole('status')).toContainText('舰船保持选中');
   await clickCell(page, 14); await page.waitForTimeout(150);
   await page.getByRole('button', { name: '旋转已选舰船', exact: true }).click(); await page.waitForTimeout(150);
   await clickCell(page, 16); await page.waitForTimeout(150); await clickCell(page, 11); await page.waitForTimeout(150);
   await clickCell(page, 0);
   await expect(page.getByRole('status')).toContainText('边界');
-  await expect(page.getByRole('status')).toContainText('原舰位已保留');
+  await expect(page.getByRole('status')).toContainText('红色舰船暂留');
   await page.locator('.ship-choice').nth(1).click(); await clickCell(page, 26);
   await expect(page.getByRole('status')).toContainText('对角线');
   await page.screenshot({ path: 'screenshots/revision-e2e-rule-rejection.png', fullPage: true });
