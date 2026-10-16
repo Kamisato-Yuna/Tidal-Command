@@ -9,7 +9,7 @@ describe('versioned replay-validated saves', () => {
   it('rejects broken JSON, incompatible versions, duplicate actions and mismatched feedback', () => {
     expect(() => parseGameSave('broken')).toThrow();
     for (const mutate of [
-      (v: any) => { v.version = 2; }, (v: any) => { v.events[0].result = 'sunk'; }, (v: any) => { v.events.push(v.events[0]); },
+      (v: any) => { v.version = 999; }, (v: any) => { v.events[0].result = 'sunk'; }, (v: any) => { v.events.push(v.events[0]); },
       (v: any) => { v.events[0].shipId = 'leaked'; }, (v: any) => { v.turn = 'player'; }, (v: any) => { v.winner = 'player'; },
       (v: any) => { v.shots.player = []; }, (v: any) => { v.fleets.ai[0].cells = [0, 1, 2, 3, 11]; }, (v: any) => { v.aiRngState = -1; },
     ]) { const value = make(); mutate(value); expect(() => parseGameSave(JSON.stringify(value))).toThrow(); }

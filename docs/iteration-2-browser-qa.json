@@ -1,0 +1,138 @@
+{
+  "status": "passed",
+  "timestampUTC": "2026-10-16T15:17:10Z",
+  "runtimeAsset": "index-75dShp8r.js",
+  "environment": {
+    "browser": "Chromium140.0.7339.186 official Headless Shell",
+    "renderer": "ANGLE SwiftShader software WebGL2",
+    "desktopViewport": [
+      1440,
+      900
+    ],
+    "otherViewports": [
+      [
+        1280,
+        720
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "target": "local production build preview; Sites post-deployment smoke pending parent deployment"
+  },
+  "automatedBrowser": {
+    "passed": 8,
+    "failed": 0,
+    "flaky": 0,
+    "durationSeconds": 101.719833,
+    "report": "test-results/e2e-results.json (local/CI artifact, not committed)",
+    "tests": "baseline5 plus revision3",
+    "coverage": [
+      "deterministic full single-shot victory and log",
+      "normal AI duplicate submission and refresh",
+      "corrupt save recovery",
+      "responsive settings/help",
+      "rendered high-quality scenes",
+      "real native pointer drag from fleet to canvas",
+      "placed ship select/move and actual on-board rotate",
+      "explicit classic boundary and diagonal rejection",
+      "camera orbit does not move ships; axes remain upright",
+      "default single confirmation with target toggle",
+      "opt-in instant firing including immediate checkbox-to-board click",
+      "instant preference refresh",
+      "3-shell exact-quota selection/toggle/confirm",
+      "normal AI atomic3-shot plan and refresh during presentation",
+      "public-only alive/sunk roster at desktop and mobile"
+    ]
+  },
+  "componentTests": {
+    "ownedFile": "tests/revision-ui.test.tsx",
+    "passed": 16,
+    "mockBoundary": "SeaBoard mocked; actual canvas interactions separately verified in browser"
+  },
+  "uiOnlyFullMatch": {
+    "difficulty": "easy",
+    "shellsPerTurn": 3,
+    "targetSelection": "physical canvas clicks in predetermined checkerboard search order; no hidden fleet or save reads for play decisions",
+    "playerShots": 60,
+    "playerHits": 9,
+    "aiShots": 59,
+    "aiHits": 17,
+    "rounds": 20,
+    "outcome": "AI victory",
+    "visibleLogRows": 119,
+    "pageErrors": [],
+    "resultRefresh": "exact stats preserved",
+    "replay": "0/5 ships, start disabled,3-shell setting retained",
+    "hiddenEnemyShips": "partial hit markers visible with no unsunk enemy models; complete enemy layout revealed only on result"
+  },
+  "responsive": {
+    "1280x720": {
+      "fireBox": {
+        "x": 1012.046875,
+        "y": 650,
+        "width": 190,
+        "height": 46
+      },
+      "horizontalOverflow": false
+    },
+    "390x844": {
+      "fireControlWithinViewport": true,
+      "rosterLegible": true,
+      "horizontalOverflow": false,
+      "touchDrag": "not tested; click placement available"
+    }
+  },
+  "fixedFindings": [
+    "stale cross-renderer callbacks could use previous ship length or confirmation mode; immediate real-browser regressions now pass with current committed-props ref",
+    "result caption updated for multi-shell rounds",
+    "placement/rotation now gives specific boundary and diagonal error reasons"
+  ],
+  "performance": {
+    "browser": "140.0.7339.186",
+    "renderer": "ANGLE SwiftShader software WebGL2",
+    "quality": "medium",
+    "mode": "production preview, fresh3-shell battle, fast enabled but idle, ocean animated",
+    "durationMs": 4033.0999999999913,
+    "frames": 112,
+    "meanMs": 36.00982142857135,
+    "p95Ms": 50,
+    "fps": 27.77020158190976,
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    }
+  },
+  "performanceCaveat": "Short software-rendered cloud frame sample only; not target desktop/mobile hardware FPS guarantee. Target-GPU performance remains unmeasured.",
+  "screenshots": {
+    "home": {
+      "artifactPath": "screenshots/revision-01-home.png"
+    },
+    "placedFleetRotate": {
+      "artifactPath": "screenshots/revision-e2e-placement.png"
+    },
+    "orbitAxes": {
+      "artifactPath": "screenshots/revision-e2e-orbit-axes.png"
+    },
+    "ruleRejection": {
+      "artifactPath": "screenshots/revision-e2e-rule-rejection.png"
+    },
+    "salvoRoster": {
+      "artifactPath": "screenshots/revision-e2e-salvo-roster.png"
+    },
+    "mobileRoster": {
+      "artifactPath": "screenshots/revision-e2e-mobile-roster.png"
+    },
+    "midMatch": {
+      "artifactPath": "screenshots/revision-ui-match-30.png"
+    },
+    "fullMatchResult": {
+      "artifactPath": "screenshots/revision-ui-match-results.png"
+    },
+    "smallDesktop": {
+      "artifactPath": "screenshots/revision-small-desktop.png"
+    }
+  },
+  "screenshotDelivery": "Screenshots are retained as browser-QA artifacts; binary screenshots are not committed to source."
+}

@@ -1,11 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { FLEET_SPECS, applyShot, createGame, getKnownBoard, getSunkShips, placementCells, canPlaceShip, validateFleet, randomFleet, projectObservation, visibleShips, type Ship, type GameState, type Side } from '../src/core';
+import { FLEET_SPECS, applyShot, createGame as createGameWithRules, getKnownBoard, getSunkShips, placementCells, canPlaceShip as canPlaceShipWithRules, validateFleet as validateFleetWithRules, randomFleet as randomFleetWithRules, projectObservation, visibleShips, type Ship, type GameState, type Side } from '../src/core';
+// Original v1 fixtures intentionally retain touching ships and edge placements.
+const createGame: typeof createGameWithRules = (fleet, difficulty, options = {}) => createGameWithRules(fleet, difficulty, { placementRule: 'adjacent-allowed', ...options });
+const canPlaceShip: typeof canPlaceShipWithRules = (cells, fleet, ignoreId) => canPlaceShipWithRules(cells, fleet, ignoreId, 'adjacent-allowed');
+const validateFleet: typeof validateFleetWithRules = (fleet, complete = true) => validateFleetWithRules(fleet, complete, 'adjacent-allowed');
+const randomFleet: typeof randomFleetWithRules = (seed, style) => randomFleetWithRules(seed, style, 'adjacent-allowed');
 const fleet = (): Ship[] => FLEET_SPECS.map((s, i) => ({ ...s, cells: placementCells(i * 20, s.length, 'horizontal') }));
 function fireAs(state: GameState, side: Side, coord: number): GameState {
   if (state.turn !== side) state = applyShot(state, state.turn, Array.from({ length: 100 }, (_, i) => i).find(i => !state.shots[state.turn].includes(i) && !state.fleets[side].some(s => s.cells.includes(i)))!).state;
   return applyShot(state, side, coord).state;
 }
-describe('fleet rules', () => {
+describe('legacy adjacent-allowed fleet rules', () => {
   it('has the exact distinct five-ship, 17-cell fleet', () => {
     expect(FLEET_SPECS.map(s => s.length)).toEqual([5, 4, 3, 3, 2]); expect(new Set(FLEET_SPECS.map(s => s.id)).size).toBe(5); expect(validateFleet(fleet()).valid).toBe(true);
   });

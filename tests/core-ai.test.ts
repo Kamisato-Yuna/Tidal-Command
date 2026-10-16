@@ -1,7 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { applyShot, createGame, randomFleet, projectObservation, RNG, FLEET_SPECS, placementCells, type AIObservation } from '../src/core';
+import { applyShot, createGame as createGameWithRules, randomFleet as randomFleetWithRules, projectObservation, RNG, FLEET_SPECS, placementCells, type AIObservation } from '../src/core';
 import { chooseEasy, chooseNormal, sampleFleets, validateFleetSample, chooseFallback } from '../src/ai';
 import { isCurrentAIResponse } from '../src/workers/protocol';
+// Preserve the original adjacent-allowed single-shell inference regressions.
+const createGame: typeof createGameWithRules = (fleet, difficulty, options = {}) => createGameWithRules(fleet, difficulty, { placementRule: 'adjacent-allowed', ...options });
+const randomFleet: typeof randomFleetWithRules = (seed, style) => randomFleetWithRules(seed, style, 'adjacent-allowed');
 const empty = (): AIObservation => ({ width: 10, height: 10, knownEnemyBoard: Array(100).fill('unknown'), remainingEnemyLengths: [5, 4, 3, 3, 2], publicSunkShips: [], turnIndex: 1 });
 const budget = { maxSamples: 80, maxNodes: 12000, maxMs: 900 };
 describe('complete-fleet constrained inference', () => {

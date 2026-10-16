@@ -1,0 +1,21 @@
+Classic Battleship AI acceptance: 1,000 seeds, single-shell only
+
+Seeds 400000–400999; 4 concurrent shards; 640 complete samples, 48,000-node / 420 ms internal budget.
+Classic placement: no touching, including diagonals; maximum one unit-cell boundary-contact edge per ship.
+SHA-256 of all core/AI/worker modules and benchmark script was identical before and after this run.
+No strategy tuning after selecting acceptance seeds. Prior adjacent-allowed report remains unchanged.
+
+Mean shots on common targets: Normal 33.115, HuntTarget 53.312, Easy 63.109, Random 95.558
+Normal vs Easy: 99.15% across 2,000 swapped-first games; 95% paired-seed bootstrap CI 98.60–99.60%.
+Normal vs HuntTarget: 98.65% across 2,000 swapped-first games; 95% paired-seed bootstrap CI 97.90–99.30%.
+Normal decisions: 114,252; degraded: 0; internal timeouts: 0.
+Concurrent cloud CLI latency: mean 5.70 ms; P90 12.23 ms; P99 19.86 ms; maximum 150.94 ms.
+
+Scope and caveats:
+- N=1 only. This is not evidence for multi-shell strength, human win rates, browser Worker latency, target-device FPS, or optimal play.
+- Easy and fixed v1 checkerboard HuntTarget retain their limited/random targeting; they do not use all classic no-touch/boundary deductions.
+- Approximate, search-biased fleet sampling, not an exact posterior. Wall-time limits may change decisions across devices.
+- Four concurrent cloud CLI processes were used; timing is not isolated browser timing.
+- Normal beat the specified 90% Easy and 65% HuntTarget thresholds on this exact benchmark; broader guarantees are not established.
+
+Full per-seed results, configuration, provenance and source hashes: ai-acceptance-classic-1000.json

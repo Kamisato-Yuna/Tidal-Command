@@ -1,4 +1,4 @@
-import { BOARD_CELLS, FLEET_SPECS, type Coord, type Orientation, type Ship } from './types';
+import { BOARD_CELLS, FLEET_SPECS, type Coord, type Orientation, type PlacementRule, type Ship } from './types';
 import { RNG, independentSeed } from './random';
 export function isCoord(value: unknown): value is Coord { return typeof value === 'number' && Number.isInteger(value) && value >= 0 && value < BOARD_CELLS; }
 export function formatCoord(coord: Coord): string { return isCoord(coord) ? `${String.fromCharCode(65 + coord % 10)}${Math.floor(coord / 10) + 1}` : '—'; }
@@ -14,12 +14,22 @@ export function isStraightShip(cells: readonly number[]): boolean {
   const ordered = [...cells].sort((a, b) => a - b);
   return ordered.every((c, i) => c === ordered[0]! + i && Math.floor(c / 10) === Math.floor(ordered[0]! / 10)) || ordered.every((c, i) => c === ordered[0]! + i * 10);
 }
-export function canPlaceShip(cells: readonly number[], fleet: readonly Ship[], ignoreShipId?: string): boolean {
+/** Number of unit-cell sides touching the outer board boundary; a corner contributes two. */
+export function boundaryContactEdges(cells: readonly number[]): number {
+  return cells.reduce((edges, c) => edges + Number(c % 10 === 0) + Number(c % 10 === 9) + Number(c < 10) + Number(c >= 90), 0);
+}
+/** Includes overlaps and all eight neighboring cells, without wrapping board edges. */
+export function shipsTouch(cells: readonly number[], occupied: readonly number[]): boolean {
+  return cells.some(a => occupied.some(b => Math.abs(a % 10 - b % 10) <= 1 && Math.abs(Math.floor(a / 10) - Math.floor(b / 10)) <= 1));
+}
+export function canPlaceShip(cells: readonly number[], fleet: readonly Ship[], ignoreShipId?: string, placementRule: PlacementRule = 'classic'): boolean {
   if (!isStraightShip(cells)) return false;
-  const occupied = new Set(fleet.filter(s => s.id !== ignoreShipId).flatMap(s => s.cells));
+  const occupiedCells = fleet.filter(s => s.id !== ignoreShipId).flatMap(s => s.cells);
+  if (placementRule === 'classic') return boundaryContactEdges(cells) <= 1 && !shipsTouch(cells, occupiedCells);
+  const occupied = new Set(occupiedCells);
   return cells.every(c => !occupied.has(c));
 }
-export function validateFleet(fleet: readonly Ship[], requireComplete = true): { valid: boolean; errors: string[] } {
+export function validateFleet(fleet: readonly Ship[], requireComplete = true, placementRule: PlacementRule = 'classic'): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
   if (!Array.isArray(fleet)) return { valid: false, errors: ['舰队格式无效'] };
   if (requireComplete && fleet.length !== 5) errors.push('需要部署全部五艘舰船');
@@ -30,6 +40,10 @@ export function validateFleet(fleet: readonly Ship[], requireComplete = true): {
     if (!spec || spec.length !== ship.length || spec.name !== ship.name) errors.push('舰船型号无效');
     if (ids.has(ship.id)) errors.push('舰船重复'); ids.add(ship.id);
     if (!Array.isArray(ship.cells) || ship.cells.length !== ship.length || !isStraightShip(ship.cells)) { errors.push('舰船必须在棋盘内连续横向或纵向摆放'); continue; }
+    if (placementRule === 'classic') {
+      if (boundaryContactEdges(ship.cells) > 1) errors.push('每艘舰船最多接触一条单位格边界');
+      if (shipsTouch(ship.cells, [...occupied])) errors.push('舰船之间必须间隔一格，包括对角线');
+    }
     for (const c of ship.cells) { if (occupied.has(c)) errors.push('舰船不能重叠'); occupied.add(c); }
   }
   return { valid: errors.length === 0, errors };
@@ -39,27 +53,24 @@ export function allPlacements(length: number): number[][] {
   for (let c = 0; c < 100; c++) for (const orientation of ['horizontal', 'vertical'] as const) { const cells = placementCells(c, length, orientation); if (cells.length) result.push(cells); }
   return result;
 }
-function touches(cells: readonly number[], occupied: readonly number[]): boolean {
-  return cells.some(a => occupied.some(b => Math.abs(a % 10 - b % 10) <= 1 && Math.abs(Math.floor(a / 10) - Math.floor(b / 10)) <= 1));
-}
 export type FleetStyle = 'random' | 'easy' | 'normal' | 'edge' | 'adjacent' | 'dispersed';
 /** Procedural, nonuniform generator. It never receives an opponent board. */
-export function randomFleet(seed = independentSeed(), style: FleetStyle = 'random'): Ship[] {
+export function randomFleet(seed = independentSeed(), style: FleetStyle = 'random', placementRule: PlacementRule = 'classic'): Ship[] {
   const rng = new RNG(seed);
-  if (style === 'normal') return selectDefensiveFleet(rng);
+  if (style === 'normal') return selectDefensiveFleet(rng, placementRule);
   const mode = style;
   for (let restart = 0; restart < 40; restart++) {
     const fleet: Ship[] = [];
     for (const spec of FLEET_SPECS) {
-      let choices = allPlacements(spec.length).filter(c => canPlaceShip(c, fleet));
+      let choices = allPlacements(spec.length).filter(c => canPlaceShip(c, fleet, undefined, placementRule));
       const occupied = fleet.flatMap(s => s.cells);
-      if (mode === 'easy' || mode === 'dispersed') { const separate = choices.filter(c => !touches(c, occupied)); if (separate.length) choices = separate; }
-      else if (mode === 'adjacent' && fleet.length && rng.next() < 0.8) { const near = choices.filter(c => touches(c, occupied)); if (near.length) choices = near; }
+      if (mode === 'easy' || mode === 'dispersed') { const separate = choices.filter(c => !shipsTouch(c, occupied)); if (separate.length) choices = separate; }
+      else if (mode === 'adjacent' && fleet.length && rng.next() < 0.8) { const near = choices.filter(c => shipsTouch(c, occupied)); if (near.length) choices = near; }
       else if (mode === 'edge') { const nearEdge = choices.filter(c => c.some(n => n % 10 === 0 || n % 10 === 9 || n < 10 || n >= 90)); if (nearEdge.length && rng.next() < 0.8) choices = nearEdge; }
       if (!choices.length) break;
       fleet.push({ ...spec, cells: [...rng.pick(choices)] });
     }
-    if (validateFleet(fleet).valid) return fleet;
+    if (validateFleet(fleet, true, placementRule).valid) return fleet;
   }
   throw new Error('无法生成完整舰队');
 }
@@ -88,11 +99,11 @@ function defenseTrial(fleet: Ship[], seed: number, policy: 'random' | 'hunt' | '
   }
   return 100;
 }
-function selectDefensiveFleet(rng: RNG): Ship[] {
+function selectDefensiveFleet(rng: RNG, placementRule: PlacementRule): Ship[] {
   const modes: FleetStyle[] = ['random', 'adjacent', 'edge', 'dispersed'];
   const evaluationSeeds = Array.from({ length: 8 }, () => rng.int(0xffffffff) || 1);
   const candidates = Array.from({ length: 24 }, (_, i) => {
-    const fleet = randomFleet(rng.int(0xffffffff), modes[i % modes.length]!);
+    const fleet = randomFleet(rng.int(0xffffffff), modes[i % modes.length]!, placementRule);
     const costs = evaluationSeeds.map((seed, j) => defenseTrial(fleet, seed, j < 4 ? 'hunt' : j < 7 ? 'easy' : 'random'));
     const mean = costs.reduce((a, b) => a + b, 0) / costs.length, low = Math.min(...costs.slice(0, 7));
     return { fleet, score: mean + low * 0.18 };

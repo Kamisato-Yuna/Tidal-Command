@@ -1,14 +1,39 @@
 # Local public-information AI
 
+## Current rules and atomic salvo revision (2026-10-16)
+
+New matches use `classic` placement: ships cannot touch, including diagonally, and each ship may have at most one unit-cell side contacting the board boundary. A corner contributes two contacts. Manual deployment, procedural generation, defensive selection, complete sampled hypotheses and fallback candidate scoring all use this same rule. `adjacent-allowed` remains explicit for migrated version-1 games and historical benchmark reproduction; an omitted AI observation rule means legacy adjacency only.
+
+Each match fixes a symmetric quota of 1–5 shells per side per turn (default 1), capped only by remaining unknown cells. The entire ordered target plan is selected before feedback. The core validates every coordinate and the full quota before committing, resolves ordered outcomes, stops at the winning shot, and changes side exactly once. It saves the complete plan separately from actual fired-shot events, so an unused winning-salvo tail is retained without inventing attacks. Version-2 save validation replays complete plans. Version-1 saves are strictly replay-validated and explicitly migrated with their one-shell adjacent rules unchanged.
+
+Normal runs one complete-fleet sampling/scoring pass per salvo and selects unique unknown cells without replacement from that fixed map. Easy also plans from the same original public board. Neither policy inserts synthetic misses or replans after intermediate hits. The worker receives `shotCount` and only a public observation; it returns `coords` plus legacy `coord`. Client response validation, stale/cancel isolation, and the one-second watchdog apply to the whole batch. If a fixed quota exceeds publicly plausible cells, remaining required shells use other unknown coordinates; the board is never fabricated as observed misses.
+
+`tests/salvo-core.test.ts` covers classic placement/sampling, symmetric quotas, invalid-plan atomicity, winning-salvo tails, migration/replay, public-only batching and worker failure/cancellation. Original core AI and rule fixtures explicitly test the old adjacent-allowed rule.
+
+The earlier reconstructed and historical benchmark numbers later in this document were measured for **single-shell, adjacent-allowed** games before this revision. They are historical for the new default rules and do not establish classic or multi-shell strength. The benchmark now records both placement rule and `shellsPerTurn: 1`, rejects mixed-rule merges, defaults to classic and accepts `--placement=adjacent-allowed` for explicit old-rule reproduction. A separate classic smoke report, if present, is not a full acceptance run.
+
+## Fresh classic single-shell acceptance (2026-10-16)
+
+`../../docs/ai-acceptance-classic-1000.json` is the separate current-classic acceptance report; `../../docs/ai-acceptance-classic-results.txt` is its concise summary. Seeds 400000–400999 were distinct from prior legacy acceptance and classic smoke seeds. Runtime and benchmark SHA-256 hashes were identical before and after all four concurrent shards; no strategy tuning occurred during the run.
+
+- 1,000 seeds, 640-sample production budget, **single-shell turns only**
+- Mean shots: Normal 33.115; HuntTarget 53.312; Easy 63.109; Random 95.558
+- Normal vs Easy: 99.15% over 2,000 swapped-first games; 95% paired-seed bootstrap interval 98.60–99.60%
+- Normal vs fixed v1 HuntTarget: 98.65%; interval 97.90–99.30%
+- 114,252 Normal decisions; zero degraded decisions and internal timeouts
+- Concurrent cloud CLI latency: mean 5.70 ms; P90 12.23 ms; P99 19.86 ms; maximum 150.94 ms
+
+Easy and fixed v1 HuntTarget do not exploit all classic no-touch/boundary deductions. These are measurements against those exact policies, not rule-aware optimal opponents or human players. Multi-shell strength, browser latency and target-device FPS remain separate. Earlier measurements below remain adjacent-allowed historical results.
+
 ## Reconstruction status
 
 The original execution environment was replaced on 2026-10-16. These modules were reconstructed from retained implementation context. Interfaces, strategy constants and algorithms were preserved, but bit-identical source recovery is not claimed. Re-run tests and benchmarks against these files. Past measurements below are explicitly historical, not validation of this reconstruction.
 
 ## Information boundary
 
-Only `AIObservation` crosses the attack-policy and Worker boundary: 100 public cell states, remaining length multiset, public sunk cells, and turn index. No hidden fleet, placement seed, game store or renderer is provided. Placement, actual attack decisions, defensive-evaluation seeds and visual randomness are independent.
+The attack-policy and Worker receive only `AIObservation` plus public settings, RNG and identifiers: 100 public cell states, remaining length multiset, public sunk cells, turn index and placement rule. No hidden fleet, placement seed, game store or renderer is provided. Placement, actual attack decisions, defensive-evaluation seeds and visual randomness are independent.
 
-Generic hits reveal no ship identity, size or direction. Sunk feedback reveals exact cells; neighboring unresolved hits remain. The game core commits a shot, resulting damage, event and next turn atomically, independently of animation. Versioned save validation replays every committed action and rejects inconsistent events, layouts or turn state.
+Generic hits reveal no ship identity, size or direction. Sunk feedback reveals exact cells; neighboring unresolved hits remain. The game core commits a complete preplanned salvo, resulting damage, actual events and next turn atomically, independently of animation. Versioned save validation replays every committed action and rejects inconsistent events, layouts or turn state.
 
 ## Easy
 
@@ -16,7 +41,7 @@ Random unknown-cell search with a 65% chase probability when unresolved hits exi
 
 ## Normal
 
-Straight candidate placements avoid known misses and sunk cells. Randomized exact-cover backtracking constructs complete surviving fleets, requires non-overlap, and explains all unresolved hits. It chooses constrained individual hits rather than merging adjacent groups. Entirely hit surviving placements are excluded because they would already have been publicly sunk.
+Straight candidate placements avoid known misses and sunk cells. Randomized exact-cover backtracking constructs complete surviving fleets, requires non-overlap (and no-touch under classic rules), and explains all unresolved hits. It chooses constrained individual hits rather than merging adjacent groups. Entirely hit surviving placements are excluded because they would already have been publicly sunk.
 
 Samples are approximate and search-biased, not an exact posterior. Scores combine full-fleet occupancy with completion bonuses for hit ships. Unknown cells within 1.5% of best score are mixed using the independent decision RNG.
 
@@ -34,7 +59,7 @@ Run:
 
 - `npm test`
 - `npm run typecheck`
-- `npm run benchmark -- --seeds=1000 --seed-start=100000 --out=benchmark.json`
+- `npm run benchmark -- --placement=classic --seeds=1000 --seed-start=500000 --out=benchmark.json`
 
 The benchmark separately reports common-target attacks, defensive layouts and complete-strategy races. Because attacks are independent and hits do not grant extra turns, shots-to-sink determine exact alternating-turn outcomes. Equal shots favor the first player; every seed is tested in both first-player roles. Confidence intervals bootstrap seed pairs, not correlated games independently.
 

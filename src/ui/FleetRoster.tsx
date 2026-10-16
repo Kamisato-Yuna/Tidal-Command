@@ -1,0 +1,10 @@
+import { useEffect,useRef,useState } from 'react';
+import { ChevronDown,Check,X } from 'lucide-react';
+import { FLEET_SPECS } from '../core';
+import { ShipIcon } from './Icons';
+/** Enemy status is derived only from public sunk identifiers, never hidden damage. */
+export function FleetRoster({ownSunkIds,enemySunkIds}:{ownSunkIds:readonly string[];enemySunkIds:readonly string[]}){
+ const [open,setOpen]=useState<'own'|'enemy'|null>(null),ref=useRef<HTMLDivElement>(null);
+ useEffect(()=>{const outside=(e:PointerEvent)=>{if(!ref.current?.contains(e.target as Node))setOpen(null);};const key=(e:KeyboardEvent)=>{if(e.key==='Escape')setOpen(null);};document.addEventListener('pointerdown',outside);document.addEventListener('keydown',key);return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',key);};},[]);
+ return <div className="fleet-roster" ref={ref}><div className="fleet-count">{(['own','enemy'] as const).map((side,i)=>{const ids=side==='own'?ownSunkIds:enemySunkIds,label=side==='own'?'我方':'敌方';return <button key={side} className={open===side?'expanded':''} aria-expanded={open===side} aria-controls="fleet-roster-detail" aria-label={`${label}舰队清单，${5-ids.length}艘在航，${ids.length}艘已沉没`} onClick={()=>setOpen(old=>old===side?null:side)}>{i===1&&<i/>}<span>{label} <strong>{5-ids.length}</strong><small>/ 5</small></span><ChevronDown size={13}/></button>;})}</div>{open&&<section className="fleet-roster-detail" id="fleet-roster-detail" aria-label={`${open==='own'?'我方':'敌方'}舰队状态`}><div className="roster-title"><strong>{open==='own'?'我方':'敌方'}舰队状态</strong><button className="icon-button" aria-label="收起舰队清单" onClick={()=>setOpen(null)}><X size={15}/></button></div>{FLEET_SPECS.map(ship=>{const sunk=(open==='own'?ownSunkIds:enemySunkIds).includes(ship.id);return <div className={`roster-ship ${sunk?'is-sunk':''}`} key={ship.id}><ShipIcon length={ship.length}/><span><strong>{ship.name}</strong><small>{ship.length} 格舰体</small></span><span className="roster-status">{sunk?<X size={13}/>:<Check size={13}/>} {sunk?'已沉没':'在航'}</span></div>})}<p>仅公开沉没状态，未沉敌舰的位置和受损情况保持隐藏。</p></section>}</div>;
+}

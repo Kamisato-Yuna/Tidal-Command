@@ -4,12 +4,15 @@
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { platform, release, arch, cpus } from 'node:os';
-import { RNG, randomFleet, FLEET_SPECS, type AIObservation, type AIDecision, type KnownCell, type Ship, type FleetStyle } from '../src/core';
+import { RNG, randomFleet, FLEET_SPECS, type AIObservation, type AIDecision, type KnownCell, type Ship, type FleetStyle, type PlacementRule } from '../src/core';
 import { chooseEasy, chooseNormal } from '../src/ai';
 import { chooseBaseline } from '../src/ai/baselines';
 const args: Record<string, string> = Object.fromEntries(process.argv.slice(2).map((a: string) => a.replace(/^--/, '').split('=')));
 const seedCount = Math.max(1, Number(args.seeds || 64)), seedStart = Math.max(1, Number(args['seed-start'] || 100000)), maxSamples = Math.max(1, Number(args.samples || 640)), out = args.out;
 if (![seedCount, seedStart, maxSamples].every(Number.isSafeInteger)) throw new Error('Seed counts and samples must be positive integers');
+const placementRule = (args.placement || 'classic') as PlacementRule;
+if (!['classic', 'adjacent-allowed'].includes(placementRule)) throw new Error('placement must be classic or adjacent-allowed');
+const shellsPerTurn = 1; // This benchmark measures single-shell turns only.
 type Policy = 'Random' | 'HuntTarget' | 'Easy' | 'Normal';
 interface AttackRun { shots: number; degraded: number; timedOut: number; decisions: number; samples: number; nodes: number; latencies: number[] }
 const latencies: number[] = []; let degraded = 0, timedOut = 0, normalDecisions = 0, sampleTotal = 0, nodeTotal = 0;
@@ -17,7 +20,7 @@ function runAttack(policy: Policy, fleet: Ship[], seed: number): AttackRun {
   const board: KnownCell[] = Array(100).fill('unknown'), remaining = FLEET_SPECS.map(s => s.length), sunk: number[][] = [];
   let rngState = seed, shots = 0, fallbacks = 0, timeouts = 0, samples = 0, nodes = 0; const times: number[] = [];
   while (remaining.length) {
-    const observation: AIObservation = { width: 10, height: 10, knownEnemyBoard: [...board], remainingEnemyLengths: [...remaining], publicSunkShips: sunk.map(c => [...c]), turnIndex: shots + 1 };
+    const observation: AIObservation = { width: 10, height: 10, placementRule, knownEnemyBoard: [...board], remainingEnemyLengths: [...remaining], publicSunkShips: sunk.map(c => [...c]), turnIndex: shots + 1 };
     let decision: AIDecision;
     if (policy === 'Normal') decision = chooseNormal(observation, rngState, { maxSamples });
     else if (policy === 'Easy') decision = chooseEasy(observation, rngState);
@@ -55,7 +58,7 @@ if (args.merge) {
   const records = shards.flatMap(s => s.seedRecords).sort((a, b) => a.seed - b.seed);
   if (new Set(records.map(r => r.seed)).size !== records.length) throw new Error('Duplicate seeds in merge');
   if (shards.some(s => !Array.isArray(s.rawNormalLatencies))) throw new Error('Run shards with --raw-diagnostics=1');
-  if (shards.some(s => s.benchmarkVersion !== shards[0].benchmarkVersion || s.configuration.maxSamples !== shards[0].configuration.maxSamples)) throw new Error('Incompatible benchmark shards');
+  if (shards.some(s => s.benchmarkVersion !== shards[0].benchmarkVersion || s.configuration.maxSamples !== shards[0].configuration.maxSamples || (s.configuration.placementRule ?? 'adjacent-allowed') !== (shards[0].configuration.placementRule ?? 'adjacent-allowed') || (s.configuration.shellsPerTurn ?? 1) !== (shards[0].configuration.shellsPerTurn ?? 1))) throw new Error('Incompatible benchmark shards');
   const group: Record<string, Record<Policy, number[]>> = {};
   for (const record of records) { group[record.style] ||= { Random: [], HuntTarget: [], Easy: [], Normal: [] }; for (const p of policies) group[record.style]![p].push(record.commonTargetShots[p]); }
   const allTimes = shards.flatMap(s => s.rawNormalLatencies) as number[], totalDecisions = shards.reduce((sum, s) => sum + s.normalDiagnostics.decisions, 0), totalDegraded = shards.reduce((sum, s) => sum + s.normalDiagnostics.degraded, 0), totalTimeouts = shards.reduce((sum, s) => sum + s.normalDiagnostics.timedOut, 0);
@@ -72,9 +75,9 @@ if (args.merge) {
   const json = JSON.stringify(merged, null, 2); if (out) writeFileSync(out, json + '\n'); console.log(json); process.exit(0);
 }
 for (let i = 0; i < seedCount; i++) {
-  const seed = seedStart + i, style = styles[i % styles.length]!, commonFleet = randomFleet(seed, style), baseAttackSeed = (0x9e3779b9 ^ (seed * 2654435761)) >>> 0 || 1, results = {} as Record<Policy, AttackRun>;
+  const seed = seedStart + i, style = styles[i % styles.length]!, commonFleet = randomFleet(seed, style, placementRule), baseAttackSeed = (0x9e3779b9 ^ (seed * 2654435761)) >>> 0 || 1, results = {} as Record<Policy, AttackRun>;
   for (const policy of policies) { results[policy] = runAttack(policy, commonFleet, baseAttackSeed); common[policy].push(results[policy].shots); perStyle[style] ||= { Random: [], HuntTarget: [], Easy: [], Normal: [] }; perStyle[style]![policy].push(results[policy].shots); }
-  const randomLayout = style === 'random' ? commonFleet : randomFleet(seed, 'random'), normalLayout = style === 'normal' ? commonFleet : randomFleet(seed, 'normal'), easyLayout = style === 'easy' ? commonFleet : randomFleet(seed, 'easy');
+  const randomLayout = style === 'random' ? commonFleet : randomFleet(seed, 'random', placementRule), normalLayout = style === 'normal' ? commonFleet : randomFleet(seed, 'normal', placementRule), easyLayout = style === 'easy' ? commonFleet : randomFleet(seed, 'easy', placementRule);
   const normalAtRandom = style === 'random' ? results.Normal : runAttack('Normal', randomLayout, baseAttackSeed), normalAtNormal = style === 'normal' ? results.Normal : runAttack('Normal', normalLayout, baseAttackSeed), normalAtEasy = style === 'easy' ? results.Normal : runAttack('Normal', easyLayout, baseAttackSeed);
   const baselineAtRandom = style === 'random' ? results.HuntTarget : runAttack('HuntTarget', randomLayout, baseAttackSeed), baselineAtNormal = style === 'normal' ? results.HuntTarget : runAttack('HuntTarget', normalLayout, baseAttackSeed), easyAtNormal = style === 'normal' ? results.Easy : runAttack('Easy', normalLayout, baseAttackSeed);
   defense.randomUnderNormal.push(normalAtRandom.shots); defense.mixedUnderNormal.push(normalAtNormal.shots); defense.randomUnderHuntTarget.push(baselineAtRandom.shots); defense.mixedUnderHuntTarget.push(baselineAtNormal.shots);
@@ -82,12 +85,12 @@ for (let i = 0; i < seedCount; i++) {
   seedRecords.push({ seed, style, commonTargetShots: Object.fromEntries(policies.map(p => [p, results[p].shots])), normalVsEasyShots: easyPairs.at(-1), normalVsHuntTargetShots: baselinePairs.at(-1), defenseShots: { randomUnderNormal: normalAtRandom.shots, mixedUnderNormal: normalAtNormal.shots, randomUnderHuntTarget: baselineAtRandom.shots, mixedUnderHuntTarget: baselineAtNormal.shots } });
   if ((i + 1) % 10 === 0 || i === seedCount - 1) console.error(`Completed ${i + 1}/${seedCount} seeds; ${((performance.now() - started) / 1000).toFixed(1)} seconds`);
 }
-const report = { benchmarkVersion: 'tidal-ai-v1-reconstructed', createdAt: new Date().toISOString(), status: seedCount >= 1000 ? '1000-plus-seed current-source benchmark; browser profiling and human playtests still required' : 'current-source smoke benchmark, below 1000-seed acceptance target',
+const report = { benchmarkVersion: 'tidal-ai-v2-rules-explicit', createdAt: new Date().toISOString(), status: seedCount >= 1000 ? '1000-plus-seed current-source benchmark; browser profiling and human playtests still required' : 'current-source smoke benchmark, below 1000-seed acceptance target',
   environment: { node: process.version, platform: platform(), release: release(), arch: arch(), cpu: cpus()[0]?.model, logicalCpus: cpus().length },
-  configuration: { seedCount, seedStart, seedEnd: seedStart + seedCount - 1, maxSamples, maxNodes: 48000, maxMs: 420, productionSamplingBudget: maxSamples === 640, placementGenerator: 'procedural nonuniform; normal selects among 24 diverse candidates evaluated against 8 independent random/hunt/easy baseline runs', baselineVersion: 'random-v1 / checkerboard-hunt-target-v1', hiddenInformation: 'Evaluator exposes independent cloned public observations only.' },
+  configuration: { placementRule, shellsPerTurn, seedCount, seedStart, seedEnd: seedStart + seedCount - 1, maxSamples, maxNodes: 48000, maxMs: 420, productionSamplingBudget: maxSamples === 640, placementGenerator: 'procedural nonuniform; normal selects among 24 diverse candidates evaluated against 8 independent random/hunt/easy baseline runs', baselineVersion: 'random-v1 / checkerboard-hunt-target-v1', hiddenInformation: 'Evaluator exposes independent cloned public observations only.' },
   attackEfficiencySameTargets: Object.fromEntries(policies.map(p => [p, stats(common[p])])), attackEfficiencyByStyle: Object.fromEntries(Object.entries(perStyle).map(([style, records]) => [style, Object.fromEntries(policies.map(p => [p, stats(records[p])]))])), defenseEfficiency: Object.fromEntries(Object.entries(defense).map(([label, shots]) => [label, stats(shots)])),
   fullStrategyPairedRaces: { explanation: 'Attacks are independent of opponent attacks. Fixed fleets and alternating turns make outcomes exactly determined by shots-to-sink; first player wins equal-shot races. Every seed is evaluated in both first-player roles. Normal uses selected mixed layouts; Easy uses spaced layouts; HuntTarget uses random layouts.', normalVsEasy: winReport(easyPairs), normalVsHuntTarget: winReport(baselinePairs) },
   normalDiagnostics: { decisions: normalDecisions, elapsedMs: stats(latencies), degraded, degradedRate: degraded / normalDecisions, timedOut, timedOutRate: timedOut / normalDecisions, meanCompleteSamples: sampleTotal / normalDecisions, meanSearchNodes: nodeTotal / normalDecisions },
-  limitations: ['Approximate biased constrained sampling, not exact posterior or optimal play.', 'Defensive strength requires the separate reported comparison; adjacency is not automatically stronger.', 'Wall-time protection can change decisions across devices; actual choices and diagnostics are saved in games.', 'CLI performance is not browser Worker latency or target-device FPS.', 'Human win rates and perceived fairness require playtests.', 'Source was reconstructed after environment replacement. Historical benchmark numbers are not validation of this source.'],
+  limitations: ['Single-shell turns only; no multi-shell strength claim. Placement rule is recorded explicitly.', 'Approximate biased constrained sampling, not exact posterior or optimal play.', 'Defensive strength requires the separate reported comparison; adjacency is not automatically stronger.', 'Wall-time protection can change decisions across devices; actual choices and diagnostics are saved in games.', 'CLI performance is not browser Worker latency or target-device FPS.', 'Human win rates and perceived fairness require playtests.', 'Source was reconstructed after environment replacement. Historical benchmark numbers are not validation of this source.'],
   elapsedSeconds: (performance.now() - started) / 1000, seedRecords, ...(args['raw-diagnostics'] ? { rawNormalLatencies: latencies } : {}) };
 const json = JSON.stringify(report, null, 2); if (out) writeFileSync(out, json + '\n'); console.log(json);
