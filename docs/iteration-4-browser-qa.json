@@ -1,0 +1,126 @@
+{
+  "iteration": 4,
+  "generatedAt": "2026-10-18T03:09:23.128365+00:00",
+  "status": "passed-local-production-build-qa",
+  "baselineGitHubCommit": "ff2c56f4b6a75988ec48d44e1648b0cd428fcef8",
+  "runtime": {
+    "javascript": "index-CG7VfXP6.js",
+    "sha256": "187acef6970f568f341dd6b7b24cb2c1609a0b24f155dbade001a46b83d025df",
+    "css": "index-CYf-4hEo.css",
+    "cssSha256": "d7c0a2d7180f49087e8f1d38696516f631fa57dd761c6d6012cc427d0cbba54f"
+  },
+  "environment": {
+    "browser": "Playwright Chromium Headless Shell 140.0.7339.186",
+    "renderer": "ANGLE SwiftShader software WebGL2",
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 900
+      },
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 1280,
+        "height": 720
+      }
+    ]
+  },
+  "tests": {
+    "independentNewComponent": {
+      "passed": 13,
+      "file": "tests/history-ui.test.tsx",
+      "renderer": "mocked SeaBoard and AI; this is not browser evidence"
+    },
+    "fullUnitComponentCoreScene": {
+      "passed": 153,
+      "files": 14,
+      "durationSeconds": 17.49,
+      "source": "npm test final aggregate run; npm run typecheck and npm run build passed"
+    },
+    "newBrowserFocused": {
+      "startTime": "2026-10-18T03:03:54.286Z",
+      "duration": 25534.881,
+      "expected": 4,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "fullBrowserRegression": {
+      "startTime": "2026-10-18T03:04:56.355Z",
+      "duration": 135396.67,
+      "expected": 17,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "targetedTerminalRowBounds": {
+      "startTime": "2026-10-18T03:08:36.892Z",
+      "duration": 9739.654,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    }
+  },
+  "verifiedCoverage": [
+    "Completed autosave archives once across repeated reloads; legacy completed one-shell save retains adjacent-allowed rules.",
+    "Results expose replay, favorite and actual JSON download; main history supports import, filters, pagination, replay and export.",
+    "Historical playback/import/orbit/modal navigation and mobile return leave ongoing live save byte-for-byte unchanged; mocked AI not invoked during historical browsing.",
+    "Invalid JSON and same-ID conflicting backup are rejected atomically; oversized file rejected before file read in component test.",
+    "52 recent imports retain 50 nonfavorites plus protected older favorite; export includes all retained records.",
+    "Simulated history quota failure preserves persisted favorite records, exposes pending completion and export, and retry stores it without duplicate.",
+    "Failed favorite write does not show optimistic success; storage event refresh reads another tab favorite and duplicate import preserves it.",
+    "Corrupt history is never overwritten by recovery/import, while current pending completion remains exportable.",
+    "Replay starts with prefix-only unknown target board and own intact fleet; sunk models appear only at executed sink events; perspective health follows selected frame.",
+    "5-shell completed fixture has 32 executed events and terminal 2/5 volley; replay contains exactly 33 steps including deployment and no unused plan-tail shots.",
+    "Step, seek, jump, play, speed, restart, modal pause and exit tested; scene is read-only and camera orbit does not advance live game.",
+    "Desktop/mobile history and replay rendered and inspected; controls fit 390px viewport with no horizontal overflow.",
+    "All 13 prior browser regressions passed, including full normal-UI firing match, save/resume, AI duplicate protection, classic placement, rapid hull selection, move/rotate, orbit, 1/3/5-shell markers and responsive rosters."
+  ],
+  "evidenceLimitations": [
+    "New completed history fixtures are generated deterministically for integration coverage; they are not evidence of human gameplay strategy or AI difficulty.",
+    "The baseline full-match browser case reads its test save to choose known target cells; mechanics/normal controls are tested, not fair human-play performance.",
+    "Storage fault tests inject a localStorage write exception; browser restart, disk failure and cross-device synchronization are outside this local-only design.",
+    "Favorites are protected from app retention, not browser data clearing or device loss; UI communicates local storage limits and backup need.",
+    "No target GPU or real-phone frame rate validation. Current production Site smoke awaits deployment."
+  ],
+  "terminalRowVisibility": {
+    "rowHeightPixels": 42,
+    "entireRowWithinScrollRail": true,
+    "targetedBrowserAssertion": "passed"
+  },
+  "performanceSample": {
+    "browser": "140.0.7339.186",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "quality": "high",
+    "reducedMotion": true,
+    "scene": "completed historical replay, final frame",
+    "asset": "index-CG7VfXP6.js",
+    "renderer": {
+      "webglVersion": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+    },
+    "frameSample": {
+      "durationMs": 5016.5,
+      "frames": 85,
+      "meanMs": 59.01764705882353,
+      "medianMs": 66.59999999999945,
+      "p95Ms": 83.39999999999964,
+      "fps": 16.944084521080434
+    },
+    "caveat": "Headless Chromium with SwiftShader software rendering; not target-GPU performance or a smoothness guarantee."
+  },
+  "screenshotArtifacts": [
+    "history-desktop.png",
+    "history-mobile.png",
+    "replay-mobile.png",
+    "replay-opening-desktop.png",
+    "replay-final-desktop.png"
+  ],
+  "openBlockers": []
+}

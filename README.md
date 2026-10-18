@@ -49,6 +49,12 @@ npm run benchmark -- --placement=classic --seeds=1000 --seed-start=400000 --out=
 
 Playwright使用已安装Chromium；如果系统没有浏览器，先 `npx playwright install chromium`。可用 `CHROMIUM_PATH=/path/to/chromium` 指定，或用 `TEST_BASE_URL=https://host/Tidal-Command/ npm run test:e2e` 检查已部署项目。CI在生产子路径运行完整对局及续局测试。
 
+## 对战档案与复盘
+
+已结束对局自动归档，入口可查看最近记录、收藏与逐发复盘；战报页可直接回看本场。未收藏记录保留最近50场，收藏不会自动清理。记录仅在当前浏览器中，清除网站数据或更换设备可能丢失，建议定期导出JSON备份。支持校验后合并导入、去重和收藏保留，不覆盖进行中的对局。存储失败会提示并保留当前页面中的待保存对局供导出/重试。
+
+复盘支持双方视角、逐发进退、时间轴与自动播放，按当时的已知信息显示舰队，正确处理提前获胜的未发射炮弹。实现和验证见[第四次迭代记录](docs/ITERATION-4.md)。
+
 ## 最新交互更新
 
 第三次迭代加入持续选中、图标移动/旋转、红色暂放与退出编辑回退、上一完整回合双方炮击标记、全方位环绕及近侧坐标。具体语义与验证见[第三次迭代记录](docs/ITERATION-3.md)。经典放置、1–5发齐射、AI与存档规则保持不变。
